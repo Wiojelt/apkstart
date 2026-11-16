@@ -305,7 +305,7 @@ function planVariants(profile) {
     ...profile,
     gpu: safeGpu,
     accel: 'off',
-    memoryMB: 2048,
+    memoryMB: profile.memoryMB > 2048 ? 2048 : 1536,
     cores: 2,
     dataMB: Math.min(profile.dataMB, 2048),
     label: t('保守冷启动（最小内存 + 清快照）'),

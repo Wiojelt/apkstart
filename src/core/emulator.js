@@ -1242,9 +1242,7 @@ class EmulatorEngine {
           network = await this.checkNetwork('', { waitMs: 12000, interval: 3000 });
         } catch (_) { /* 体检失败不算启动失败 */ }
         if (network && !network.ok) {
-          onLog(t('⚠ 安卓虚拟机暂时没连上网（Wi-Fi 未关联或没拿到地址）。'
-            + '需要联网的应用打开后可能一直黑屏：稍后重开应用即可；'
-            + '若持续无网，可在「设置 → 修复网络」重连（不会删除已装应用）。'));
+          onLog(t('⚠ 安卓虚拟机暂时没连上网（Wi-Fi 未关联或没拿到地址）。需要联网的应用打开后可能一直黑屏：稍后重开应用即可；若持续无网，可在「设置 → 修复网络」重连（不会删除已装应用）。'));
         }
         return {
           ok: true, serial: this.serial, port, accel: accelInfo, logFile,

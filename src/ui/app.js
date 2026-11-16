@@ -638,7 +638,7 @@ function showMenu(x, y, pkg) {
 
 // ---------------- 标题栏语言菜单 ----------------
 
-const LANG_SHORT = { en: 'EN', vi: 'VI', zh: '中' };
+const LANG_SHORT = { tr: 'TR', en: 'EN' };
 
 function initLangButton() {
   const btn = $('btnLang');

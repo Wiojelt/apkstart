@@ -341,6 +341,7 @@ function assert(cond, msg) { if (!cond) throw new Error(msg || '断言失败'); 
     store.saveSettings({ runtime: { installed: false }, engine: { mode: 'builtin' } });
     const rt = new Runtime(TMP);
     // 用假 adb 保证 isOnline 快速失败
+    rt.client = () => ({ isOnline: async () => false });
     const r = await rt.ensure({ onLog: () => {} });
     assert(r.ok === false, '不应就绪');
     assert(['provision', 'install'].includes(r.needsSetup), `needsSetup=${r.needsSetup}`);

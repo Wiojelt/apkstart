@@ -459,7 +459,6 @@ class Provisioner {
         compressed: needsExtract,
         required: false,
         note: sysimg.ok
-        note: sysimg.ok
           ? `Android ${sysimg.api} (${(sysimg.size / 1073741824).toFixed(2)} GB${sysimg.compressed ? '，' + t('包内压缩版，首次启动自动展开') : ''})`
           : (compatReady
             ? (playImage.compressed

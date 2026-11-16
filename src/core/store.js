@@ -34,7 +34,7 @@ const APPS_FILE = path.join(DATA_DIR, 'apps.json');
 const SETTINGS_FILE = path.join(DATA_DIR, 'settings.json');
 
 const DEFAULT_SETTINGS = {
-  language: 'en',            // 界面语言：en（默认） | vi | zh
+  language: 'tr',            // 界面语言：tr（默认） | en
   adbPath: '',
   device: '127.0.0.1:5555',
   engine: {

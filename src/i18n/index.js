@@ -13,24 +13,23 @@
  */
 
 const LANGUAGES = [
+  { code: 'tr', name: 'Türkçe', tag: 'tr-TR' },
   { code: 'en', name: 'English', tag: 'en-US' },
-  { code: 'vi', name: 'Tiếng Việt', tag: 'vi-VN' },
-  { code: 'zh', name: '中文', tag: 'zh-CN' },
 ];
-const DEFAULT_LANG = 'en';
+const DEFAULT_LANG = 'tr';
 
 const DICTS = {
+  tr: require('./tr.json'),
   en: require('./en.json'),
-  vi: require('./vi.json'),
 };
 
 let current = null;
 
 function normalize(lang) {
   const l = String(lang || '').toLowerCase();
-  if (l.startsWith('vi')) return 'vi';
   if (l.startsWith('zh')) return 'zh';
   if (l.startsWith('en')) return 'en';
+  if (l.startsWith('tr')) return 'tr';
   return DEFAULT_LANG;
 }
 
@@ -70,10 +69,16 @@ function lookup(src, lang) {
   const l = lang || getLang();
   if (l === 'zh') return null;
   const d = DICTS[l];
-  if (!d) return null;
-  if (Object.prototype.hasOwnProperty.call(d, src)) return d[src];
-  const k = normKey(src);
-  if (k !== src && Object.prototype.hasOwnProperty.call(d, k)) return d[k];
+  if (d) {
+    if (Object.prototype.hasOwnProperty.call(d, src)) return d[src];
+    const k = normKey(src);
+    if (k !== src && Object.prototype.hasOwnProperty.call(d, k)) return d[k];
+  }
+  if (l !== 'en' && DICTS.en) {
+    if (Object.prototype.hasOwnProperty.call(DICTS.en, src)) return DICTS.en[src];
+    const k = normKey(src);
+    if (k !== src && Object.prototype.hasOwnProperty.call(DICTS.en, k)) return DICTS.en[k];
+  }
   return null;
 }
 
@@ -84,10 +89,11 @@ function t(src, vars) {
   return format(hit != null ? hit : s, vars);
 }
 
-/** Dictionary for the current language (empty for Chinese) — handed to the renderer. */
+/** Dictionary for the current language — handed to the renderer. */
 function dict(lang) {
   const l = lang || getLang();
-  return l === 'zh' ? {} : (DICTS[l] || {});
+  if (l === 'zh') return {};
+  return DICTS[l] || DICTS[DEFAULT_LANG] || {};
 }
 
 module.exports = { t, getLang, setLang, normalize, localeTag, normKey, format, dict, LANGUAGES, DEFAULT_LANG, DICTS };

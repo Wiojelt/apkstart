@@ -148,7 +148,7 @@ function main() {
     fs.writeFileSync(args[dumpAt + 1], JSON.stringify([...keys.keys()], null, 2));
   }
   let missing = 0;
-  for (const lang of ['en', 'vi']) {
+  for (const lang of ['en', 'tr']) {
     const dict = JSON.parse(fs.readFileSync(path.join(SRC, 'i18n', `${lang}.json`), 'utf8'));
     const miss = [...keys.entries()].filter(([k]) => !(k in dict));
     const bad = [...keys.keys()].filter((k) => k in dict && placeholders(k) !== placeholders(dict[k]));
