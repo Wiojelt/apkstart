@@ -72,9 +72,9 @@ const DEFAULT_SETTINGS = {
     // 网络加速：给模拟器指定国内公共 DNS。安卓默认的 10.0.2.3 要走主机 DNS，
     // VPN / 公司网 / 某些运营商下解析会拖到几百毫秒，视频类应用首屏会明显发卡。
     fastDns: true,
-    // 系统语言：开机时由 emulator -prop 注入（guest 里 setprop 会被 SELinux 拒绝）。
-    // 默认简体中文。设成 en-US 或 off 就回到镜像原生英文。
-    locale: 'zh-CN',
+    // 系统语言：开机时由 emulator -change-locale 注入。
+    // locale: 'zh-CN'
+    locale: 'tr-TR',
     // 中文输入法：随包带 AOSP 谷歌拼音输入法，开机后静默安装并启用。
     // 系统镜像只带 LatinIME（英文键盘），不装就打不了中文。
     chineseIme: true,

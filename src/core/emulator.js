@@ -532,7 +532,7 @@ class EmulatorEngine {
    * 设成 'en-US' 或 'off' 就回到镜像原生英文。
    */
   _guestLocale() {
-    const v = String(this.settings?.engine?.locale || 'zh-CN').trim();
+    const v = String(this.settings?.engine?.locale || 'tr-TR').trim();
     if (!v || v === 'off' || /^false$/i.test(v)) return '';
     return v;
   }
