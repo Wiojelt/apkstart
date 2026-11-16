@@ -35,6 +35,7 @@ const SETTINGS_FILE = path.join(DATA_DIR, 'settings.json');
 
 const DEFAULT_SETTINGS = {
   language: 'tr',            // 界面语言：tr（默认） | en
+  theme: 'dark',             // 主题：dark（默认） | light | nord | system
   adbPath: '',
   device: '127.0.0.1:5555',
   engine: {

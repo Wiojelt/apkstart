@@ -1255,7 +1255,7 @@ function registerIpc() {
           : null,
         shortcutExists: a.shortcutPath ? fs.existsSync(a.shortcutPath) : false,
       }))
-      .sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || (b.lastLaunchAt || 0) - (a.lastLaunchAt || 0) || a.label.localeCompare(b.label, 'zh'));
+      .sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || (b.lastLaunchAt || 0) - (a.lastLaunchAt || 0) || a.label.localeCompare(b.label, i18n.localeTag()));
   });
 
   ipcMain.handle('apk:pick', async () => {
@@ -1821,9 +1821,7 @@ function registerIpc() {
           ok: false,
           storeLimited: true,
           accel,
-          note: '微软商店版无法安装内核驱动。请到「启用或关闭 Windows 功能」里勾选'
-            + '「虚拟机平台（Virtual Machine Platform）」和「Windows 虚拟机监控程序平台」，'
-            + '重启电脑后 ApkStart 会自动使用 WHPX 硬件加速。',
+          note: t('微软商店版无法安装内核驱动。请到「启用或关闭 Windows 功能」里勾选「虚拟机平台（Virtual Machine Platform）」和「Windows 虚拟机监控程序平台」，重启电脑后 ApkStart 会自动使用 WHPX 硬件加速。'),
         };
       }
       const ae = await runtime.provisioner.installAehd(

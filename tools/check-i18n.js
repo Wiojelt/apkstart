@@ -6,7 +6,7 @@
  *  1. Collects every translation key:
  *       - t('…') / t("…") / t(`…`) calls in src/**.js (key = literal, whitespace-collapsed)
  *       - static text, title/placeholder/alt/aria-label and [data-i18n-html] blocks in src/ui/*.html
- *  2. Reports keys missing from src/i18n/en.json and src/i18n/vi.json, and placeholder mismatches.
+ *  2. Reports keys missing from src/i18n/en.json and src/i18n/tr.json, and placeholder mismatches.
  *  3. With --strays: lists CJK string literals NOT wrapped in t() (log-only strings are expected there).
  *  4. With --dump <file>: writes all keys (JSON array) for translators.
  *

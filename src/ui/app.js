@@ -636,9 +636,56 @@ function showMenu(x, y, pkg) {
   menu.style.top = `${Math.min(y, window.innerHeight - rect.height - 10)}px`;
 }
 
-// ---------------- 标题栏语言菜单 ----------------
+// ---------------- 标题栏语言与主题菜单 ----------------
 
 const LANG_SHORT = { tr: 'TR', en: 'EN' };
+
+const THEME_ICONS = {
+  dark: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
+  nord: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>',
+  light: '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>',
+  system: '<rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>'
+};
+
+function applyTheme(theme) {
+  const chosen = theme || (state.settings && state.settings.theme) || 'dark';
+  let actual = chosen;
+  if (chosen === 'system') {
+    actual = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  document.documentElement.dataset.theme = actual;
+  const iconEl = $('themeIcon');
+  if (iconEl && THEME_ICONS[chosen]) {
+    iconEl.innerHTML = THEME_ICONS[chosen];
+  }
+  const btn = $('btnTheme');
+  if (btn) {
+    const titles = { dark: t('Karanlık'), nord: t('Gece Mavisi (Nord)'), light: t('Aydınlık'), system: t('Sistem Teması') };
+    btn.title = titles[chosen] || t('Tema');
+  }
+}
+
+function initThemeButton() {
+  const btn = $('btnTheme');
+  if (!btn) return;
+  const themes = ['dark', 'nord', 'light'];
+  btn.addEventListener('click', async () => {
+    const cur = (state.settings && state.settings.theme) || 'dark';
+    const nextIdx = (themes.indexOf(cur) + 1) % themes.length;
+    const next = themes[nextIdx >= 0 ? nextIdx : 0];
+    applyTheme(next);
+    if ($('setTheme')) $('setTheme').value = next;
+    state.settings = await api.setSettings({ theme: next });
+  });
+
+  if (window.matchMedia) {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      if ((state.settings && state.settings.theme) === 'system') {
+        applyTheme('system');
+      }
+    });
+  }
+}
 
 function initLangButton() {
   const btn = $('btnLang');
@@ -838,6 +885,10 @@ function syncBackendFields() {
 }
 
 function fillSettings(s) {
+  const themeSel = $('setTheme');
+  if (themeSel) {
+    themeSel.value = s.theme || 'dark';
+  }
   const langSel = $('setLanguage');
   if (langSel && api.i18n) {
     if (!langSel.options.length) {
@@ -1083,6 +1134,14 @@ function bindSettings() {
     state.settings = await api.setSettings(patch);
   };
 
+  if ($('setTheme')) {
+    $('setTheme').addEventListener('change', async (e) => {
+      const newTheme = e.target.value;
+      applyTheme(newTheme);
+      await save({ theme: newTheme });
+    });
+  }
+
   if ($('setLanguage')) {
     $('setLanguage').addEventListener('change', async (e) => {
       // 主进程保存后会 reload 所有窗口，界面按新语言重新加载
@@ -1260,10 +1319,10 @@ function bindSettings() {
       const mode = e.target.value;
       state.settings = await api.setSettings({ display: { orientationMode: mode } });
       toast({
-        title: mode === 'auto' ? '已设为跟随应用' : (mode === 'landscape' ? '已强制横屏' : '已强制竖屏'),
+        title: mode === 'auto' ? t('已设为跟随应用') : (mode === 'landscape' ? t('已强制横屏') : t('已强制竖屏')),
         body: mode === 'auto'
-          ? '下次打开应用时会按应用自己的方向选面板，方向不一致的话会重启一次运行时。'
-          : '下次打开应用时会重启一次运行时把面板切到指定方向，之后不再重启。',
+          ? t('下次打开应用时会按应用自己的方向选面板，方向不一致的话会重启一次运行时。')
+          : t('下次打开应用时会重启一次运行时把面板切到指定方向，之后不再重启。'),
         type: 'ok',
       });
     });
@@ -1273,8 +1332,8 @@ function bindSettings() {
       const on = e.target.value === 'on';
       state.settings = await api.setSettings({ display: { tabletMode: on } });
       toast({
-        title: on ? '已打开平板排版' : '已关闭平板排版',
-        body: '下次打开应用时生效（会重启一次运行时来改逻辑密度）。',
+        title: on ? t('已打开平板排版') : t('已关闭平板排版'),
+        body: t('下次打开应用时生效（会重启一次运行时来改逻辑密度）。'),
         type: 'ok',
       });
     });
@@ -1870,6 +1929,7 @@ function bindEvents() {
 /* ---------------- 启动 ---------------- */
 
 async function init() {
+  applyTheme('dark');
   if (window.translateDom) translateDom(document.body);
   bindEvents();
   bindSettings();
@@ -1877,6 +1937,8 @@ async function init() {
   bindAndroid();
   bindWelcome();
   state.settings = await api.getSettings();
+  applyTheme(state.settings && state.settings.theme);
+  initThemeButton();
   await refreshStatus();
   await refreshApps();
   refreshAndroid();

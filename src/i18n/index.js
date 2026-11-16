@@ -1,15 +1,15 @@
 'use strict';
 /**
- * i18n: interface language (English / Tiếng Việt / 中文).
+ * i18n: interface language (Türkçe / English).
  *
  * The UI was originally written in Chinese, so the Chinese source text itself is the
- * translation key (gettext style): `t('安装完成')` returns the English / Vietnamese text
+ * translation key (gettext style): `t('安装完成')` returns the Turkish / English text
  * for the current language, or the Chinese text unchanged when the language is `zh`
- * or when a translation is missing.
+ * (used in tests) or when a translation is missing.
  *
  * Placeholders use `{name}`: `t('{n} 分钟前', { n: 5 })`.
  *
- * Shared by the main process and (via preload) the renderer. Default language: English.
+ * Shared by the main process and (via preload) the renderer. Default language: Türkçe (tr).
  */
 
 const LANGUAGES = [

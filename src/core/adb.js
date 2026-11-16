@@ -950,16 +950,22 @@ class AdbClient {
   }
 
   /**
-   * 保证系统语言是简体中文。
+   * 保证系统语言与时区设置。
    * persist.sys.locale 是 SELinux 保护的只读属性，运行时改不了（会报
-   * "Failed to set property"），真正生效靠 emulator 启动时的 -prop 注入。
-   * 这里做的是能做的部分：把应用级 locale 和时区设好，让界面立刻中文、时间正确。
+   * "Failed to set property"），真正生效靠 emulator 启动时的 -change-locale 注入。
+   * 这里做的是能做的部分：把应用级 locale 和时区设好，让界面和时间立刻生效。
    */
-  async ensureChineseLocale(locale = 'zh-CN') {
+  async ensureChineseLocale(locale = 'tr-TR') {
+    let tz = 'UTC';
+    try {
+      tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Istanbul';
+    } catch (_) {
+      tz = String(locale).startsWith('tr') ? 'Europe/Istanbul' : 'UTC';
+    }
     const cmds = [
       'settings put system system_locales ' + locale,
-      'setprop persist.sys.timezone Asia/Shanghai',
-      // 24 小时制 + 中文常见的日期格式
+      'setprop persist.sys.timezone ' + tz,
+      // 24 小时制
       'settings put system time_12_24 24',
     ];
     await this.shell(cmds.join(' ; '), { timeout: 12000 }).catch(() => '');

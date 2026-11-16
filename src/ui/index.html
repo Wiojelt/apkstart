@@ -35,7 +35,12 @@
   </div>
   <div class="titlebar-spacer"></div>
   <div class="titlebar-actions">
-    <button class="icon-btn lang-btn" id="btnLang" title="语言 · Language · Ngôn ngữ" aria-haspopup="menu">
+    <button class="icon-btn theme-btn" id="btnTheme" title="Tema / Theme">
+      <svg id="themeIcon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+    </button>
+    <button class="icon-btn lang-btn" id="btnLang" title="Dil / Language" aria-haspopup="menu">
       <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18"/><path d="M12 3a14 14 0 0 0 0 18"/></svg>
       <span class="lang-code" id="langCode">EN</span>
     </button>
@@ -149,13 +154,24 @@
       </button>
     </header>
     <div class="modal-body">
-      <div class="group" id="languageGroup">
-        <div class="group-title">界面语言</div>
-        <div class="field">
-          <label for="setLanguage">Dil / Language</label>
-          <select id="setLanguage"></select>
-          <span class="sub">切换后界面会立即刷新，正在运行的应用不受影响。</span>
+      <div class="group" id="appearanceGroup">
+        <div class="group-title">Görünüm ve Dil</div>
+        <div class="field two">
+          <div>
+            <label for="setTheme">Tema / Theme</label>
+            <select id="setTheme">
+              <option value="dark">Karanlık (Varsayılan)</option>
+              <option value="nord">Gece Mavisi (Nord)</option>
+              <option value="light">Aydınlık</option>
+              <option value="system">Sistem Teması</option>
+            </select>
+          </div>
+          <div>
+            <label for="setLanguage">Dil / Language</label>
+            <select id="setLanguage"></select>
+          </div>
         </div>
+        <span class="sub">Tema ve dil seçiminiz tüm pencerelerde anında uygulanır.</span>
       </div>
 
       <div class="group" id="runtimeGroup">
@@ -768,28 +784,34 @@
       </div>
 
       <div class="group" id="aboutGroup">
-        <div class="group-title">关于</div>
+        <div class="group-title">Hakkında & Destek</div>
         <div class="about-box">
           <div class="about-brand">
             <img class="about-logo" src="assets/logo.png" alt="ApkStart Logo" draggable="false" />
           </div>
-          <div class="about-qrs">
-            <div class="about-qr">
-              <img src="assets/wechat-qr.jpg" alt="微信公众号二维码" width="112" height="112" />
-              <span class="about-qr-tip">扫码关注公众号</span>
-            </div>
-            <div class="about-qr">
-              <img src="assets/douyin-qr.jpg" alt="抖音二维码" width="112" height="112" />
-              <span class="about-qr-tip">抖音 · 日常MIKU</span>
-            </div>
-          </div>
           <div class="about-info">
             <div class="about-name">ApkStart <span class="about-ver" id="aboutVer"></span></div>
-            <p class="note">双击即装的 Windows 安卓应用启动器：APK 安装、桌面快捷方式、独立窗口运行、文件双向互通。</p>
+            <p class="note">Windows için modern Android APK başlatıcısı: Çift tıkla yükle, masaüstü kısayolu, bağımsız pencere ve çift yönlü dosya paylaşımı.</p>
             <div class="about-links">
-              <a href="https://github.com/RoutineMiku/apkstart" target="_blank" rel="noopener">GitHub · RoutineMiku/apkstart</a>
-              <a href="https://v.douyin.com/9TIIxVCANig/" target="_blank" rel="noopener">抖音 · @日常MIKU（联系作者）</a>
-              <span class="powered">Powered by <b>RoutineMiku</b></span>
+              <div class="user-support">
+                <b>Fork & Destek:</b>
+                <a href="https://github.com/Wiojelt/apkstart" target="_blank" rel="noopener">GitHub · Wiojelt/apkstart</a>
+                <a href="https://github.com/Wiojelt/apkstart/issues" target="_blank" rel="noopener">Sorun Bildir / Destek Talebi (Issues)</a>
+              </div>
+              <div class="upstream-support" style="margin-top: 8px; font-size: 11px; opacity: 0.85;">
+                <span>Orijinal Proje: </span>
+                <a href="https://github.com/RoutineMiku/apkstart" target="_blank" rel="noopener">RoutineMiku/apkstart</a>
+                <span class="powered" style="margin-left: 8px;">Powered by <b>RoutineMiku</b> & <b>Wiojelt</b></span>
+                <a href="https://v.douyin.com/9TIIxVCANig/" target="_blank" rel="noopener" style="display:none">抖音 · @日常MIKU（联系作者）</a>
+              </div>
+            </div>
+          </div>
+          <div class="about-qrs" style="display:none">
+            <div class="about-qr">
+              <img src="assets/wechat-qr.jpg" alt="WeChat" width="1" height="1" />
+            </div>
+            <div class="about-qr">
+              <img src="assets/douyin-qr.jpg" alt="Douyin" width="1" height="1" />
             </div>
           </div>
         </div>
