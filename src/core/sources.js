@@ -1,4 +1,5 @@
 'use strict';
+const { t } = require('../i18n');
 /**
  * 双源（GitHub / Gitee）+ 镜像前缀的统一下载来源管理。
  *
@@ -53,9 +54,9 @@ const SAMPLE_BYTES = 256 * 1024;
 
 function openUrl(url, { timeout = 10000, headers = {}, redirects = 0, followRedirect = true } = {}) {
   return new Promise((resolve, reject) => {
-    if (redirects > 6) return reject(new Error('重定向次数过多'));
+    if (redirects > 6) return reject(new Error(t('重定向次数过多')));
     let u;
-    try { u = new URL(url); } catch (_) { return reject(new Error('地址无效')); }
+    try { u = new URL(url); } catch (_) { return reject(new Error(t('地址无效'))); }
     const mod = u.protocol === 'http:' ? http : https;
     const req = mod.request(url, {
       method: 'GET',
@@ -74,7 +75,7 @@ function openUrl(url, { timeout = 10000, headers = {}, redirects = 0, followRedi
       }
       resolve(res);
     });
-    req.on('timeout', () => req.destroy(new Error('连接超时')));
+    req.on('timeout', () => req.destroy(new Error(t('连接超时'))));
     req.on('error', reject);
     req.end();
   });
@@ -230,7 +231,7 @@ class Sources {
   blockedReason(id) {
     const until = this._blocked.get(id) || 0;
     if (until <= Date.now()) return null;
-    return `暂时跳过（${Math.ceil((until - Date.now()) / 60000)} 分钟内不再尝试）`;
+    return t('暂时跳过（{min} 分钟内不再尝试）', { min: Math.ceil((until - Date.now()) / 60000) });
   }
 
   /** 各源的最新 release（并发，任何一个失败都不影响另一个） */
@@ -319,8 +320,8 @@ class Sources {
         const limited = /\b(403|429)\b/.test(e.message);
         if (limited) this._blocked.set(id, Date.now() + this._blockMs);
         const hint = limited
-          ? '（被限流，已暂停使用该源一段时间）'
-          : (id === 'gitee' && !token ? '（可稍后重试，或在设置里填只读 token 提高额度）' : '');
+          ? t('（被限流，已暂停使用该源一段时间）')
+          : (id === 'gitee' && !token ? t('（可稍后重试，或在设置里填只读 token 提高额度）') : '');
         return { source: id, name: s.name, web: s.web, error: `${e.message}${hint}` };
       }
     });
@@ -347,11 +348,11 @@ class Sources {
     }
     const ok = all.filter((x) => x && x.rel);
     if (!ok.length) {
-      const why = all.map((x) => `${x.name || x.source}: ${x.error || '无数据'}`).join('；');
+      const why = all.map((x) => `${x.name || x.source}: ${x.error || t('无数据')}`).join(t('；'));
       // 全挂了但手里有上一次的结果：宁可给一份「可能是旧的」版本信息，
       // 也不要让界面直接报错 —— 用户至少还能看到当前版本和发布页入口。
       if (cached.value) return { ...cached.value, stale: true, staleReason: why };
-      throw new Error(`连不上更新服务器（${why}）`);
+      throw new Error(t('连不上更新服务器（{why}）', { why }));
     }
     ok.sort((a, b) => cmpVer(b.rel.tag_name || b.rel.name, a.rel.tag_name || a.rel.name));
     const top = ok[0];
@@ -362,8 +363,8 @@ class Sources {
     // 同名整包 + 分片组同时存在时优先用整包：分片要拼装，多一个失败点。
     let raw = [];
     for (const item of ok) {
-      const t = String(item.rel.tag_name || item.rel.name || '').replace(/^v/i, '');
-      if (t !== version) continue;
+      const ver = String(item.rel.tag_name || item.rel.name || '').replace(/^v/i, '');
+      if (ver !== version) continue;
       for (const a of (item.rel.assets || [])) {
         const key = String(a.name || '');
         if (!key) continue;
@@ -463,7 +464,7 @@ class Sources {
       if (!c || now - c.at > this._rankTtl) need.push(u);
     }
     if (need.length) {
-      onProgress?.({ stage: 'probe', message: `正在测速 ${need.length} 个下载源…` });
+      onProgress?.({ stage: 'probe', message: t('正在测速 {n} 个下载源…', { n: need.length }) });
       // 顺序测而不是并发测：并发会互相抢带宽，测出来的名次变成「谁抢得凶」，
       // 而不是「谁真的快」。每个源 256KB，正常也就一秒左右。
       // 单个源最多等 6 秒就放弃（旧版 9 秒 × 4 个源 = 最长 36 秒没有任何字节进度，
@@ -473,7 +474,7 @@ class Sources {
         i += 1;
         let host = u;
         try { host = new URL(u).host; } catch (_) { /* 地址不合法就原样显示 */ }
-        onProgress?.({ stage: 'probe', message: `正在测速第 ${i}/${need.length} 个源：${host}…` });
+        onProgress?.({ stage: 'probe', message: t('正在测速第 {i}/{n} 个源：{host}…', { i, n: need.length, host }) });
         // eslint-disable-next-line no-await-in-loop
         const r = await measure(u, { timeoutMs: 6000 });
         this._rankCache.set(u, { at: Date.now(), ok: r.ok, speed: r.speed });
@@ -489,7 +490,7 @@ class Sources {
     if (s > 0) {
       onProgress?.({
         stage: 'probe',
-        message: `已选最快的源：${new URL(best).host}（约 ${(s / 1048576).toFixed(2)} MB/s）`,
+        message: t('已选最快的源：{host}（约 {speed} MB/s）', { host: new URL(best).host, speed: (s / 1048576).toFixed(2) }),
       });
     }
     return sorted;

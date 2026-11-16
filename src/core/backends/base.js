@@ -1,4 +1,5 @@
 'use strict';
+const { t } = require('../../i18n');
 /**
  * 后端适配层（backend driver）—— 把「安卓从哪来」这件事从 Runtime 里抽出来。
  *
@@ -61,7 +62,7 @@ class Backend {
   static get id() { return 'base'; }
 
   /** 界面上显示的名字 */
-  static get label() { return '未命名后端'; }
+  static get label() { return t('未命名后端'); }
 
   /** 一句话说明，设置页用它解释这个底座是什么 */
   static get summary() { return ''; }
@@ -96,7 +97,7 @@ class Backend {
    * @returns {Promise<{ok:boolean, reason?:string, needs?:string}>}
    */
   // eslint-disable-next-line class-methods-use-this
-  async check() { return { ok: false, reason: '未实现' }; }
+  async check() { return { ok: false, reason: t('未实现') }; }
 
   /** 解析可用的 adb 路径（优先自带，其次底座自带的，最后系统 PATH） */
   async resolveAdb() { return ''; }
@@ -107,7 +108,7 @@ class Backend {
    * @returns {Promise<{ok:boolean, serial?:string, adbPath?:string, reused?:boolean, error?:string}>}
    */
   // eslint-disable-next-line class-methods-use-this
-  async ensure(o = {}) { return { ok: false, error: '未实现' }; }
+  async ensure(o = {}) { return { ok: false, error: t('未实现') }; }
 
   /**
    * 安卓画面窗口的候选 HWND（十六进制或十进制的字符串数组，按优先级排序）。
@@ -141,11 +142,11 @@ class Backend {
 
   /** 停止运行时 */
   // eslint-disable-next-line class-methods-use-this
-  async stop(o = {}) { return { ok: false, error: '未实现' }; }
+  async stop(o = {}) { return { ok: false, error: t('未实现') }; }
 
   /** 下载/部署缺失组件（只有带 CAPS.provision 的底座需要实现） */
   // eslint-disable-next-line class-methods-use-this
-  async install(component, onProgress) { return { ok: false, error: '该后端不支持自动部署' }; }
+  async install(component, onProgress) { return { ok: false, error: t('该后端不支持自动部署') }; }
 
   /** 占用统计（设置页「运行时占用」） */
   // eslint-disable-next-line class-methods-use-this
@@ -157,11 +158,11 @@ class Backend {
 
   /** 调整数据分区 */
   // eslint-disable-next-line class-methods-use-this
-  async resizeData(mb) { return { ok: false, error: '该后端不支持调整数据分区' }; }
+  async resizeData(mb) { return { ok: false, error: t('该后端不支持调整数据分区') }; }
 
   /** 彻底重置安卓数据 */
   // eslint-disable-next-line class-methods-use-this
-  async resetData() { return { ok: false, error: '该后端不支持重置数据' }; }
+  async resetData() { return { ok: false, error: t('该后端不支持重置数据') }; }
 
   /** 释放资源（ApkStart 退出时调用；默认什么都不做） */
   // eslint-disable-next-line class-methods-use-this

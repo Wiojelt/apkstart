@@ -3,6 +3,8 @@
  * 零配置自适应 / 容器式瘦身的回归测试（纯 Node，不拉起 emulator）
  * 运行：node test/auto-test.js
  */
+// 断言基于中文原文：固定界面语言为中文，不受本机 settings.json 影响
+require('../src/i18n').setLang('zh');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');

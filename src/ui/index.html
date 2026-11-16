@@ -35,6 +35,10 @@
   </div>
   <div class="titlebar-spacer"></div>
   <div class="titlebar-actions">
+    <button class="icon-btn lang-btn" id="btnLang" title="语言 · Language · Ngôn ngữ" aria-haspopup="menu">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18"/><path d="M12 3a14 14 0 0 0 0 18"/></svg>
+      <span class="lang-code" id="langCode">EN</span>
+    </button>
     <button class="icon-btn" id="btnSettings" title="设置">
       <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6h.09A1.7 1.7 0 0 0 10 3.05V3a2 2 0 1 1 4 0v.09A1.7 1.7 0 0 0 15 4.6a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9v.09a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg>
     </button>
@@ -69,7 +73,7 @@
         </svg>
       </div>
       <h2>把 APK 拖进来就能装</h2>
-      <p>安装完成后会自动生成桌面图标，双击即以独立窗口运行，和普通 Windows 软件一样。<br/>已注册 .apk 关联时，在资源管理器里双击 APK 也会直接装到 ApkStart。</p>
+      <p data-i18n-html>安装完成后会自动生成桌面图标，双击即以独立窗口运行，和普通 Windows 软件一样。<br>已注册 .apk 关联时，在资源管理器里双击 APK 也会直接装到 ApkStart。</p>
       <button class="btn primary lg" id="btnInstall2">选择 APK 文件</button>
       <p class="hint" id="emptyHint"></p>
     </div>
@@ -132,6 +136,9 @@
 <!-- 右键菜单 -->
 <div class="ctxmenu" id="ctxmenu"></div>
 
+<!-- 语言菜单（标题栏地球按钮） -->
+<div class="ctxmenu lang-menu" id="langMenu" role="menu"></div>
+
 <!-- 设置 -->
 <div class="modal-mask" id="settingsMask">
   <div class="modal">
@@ -142,6 +149,15 @@
       </button>
     </header>
     <div class="modal-body">
+      <div class="group" id="languageGroup">
+        <div class="group-title">界面语言</div>
+        <div class="field">
+          <label for="setLanguage">语言 · Language · Ngôn ngữ</label>
+          <select id="setLanguage"></select>
+          <span class="sub">切换后界面会立即刷新，正在运行的应用不受影响。</span>
+        </div>
+      </div>
+
       <div class="group" id="runtimeGroup">
         <div class="group-title">运行时与环境</div>
         <div class="field">
@@ -163,14 +179,14 @@
           <h2>安装 Android 到虚拟磁盘</h2>
           <p class="guide-sub">虚拟机窗口已打开。按下面 6 步操作一次，之后 ApkStart 会直接从磁盘启动，不再需要镜像。</p>
           <ol class="guide-list">
-            <li><b>启动菜单</b>：用 <kbd>↓</kbd> 选到 <code>Installation - Install Android-x86 to harddisk</code>，回车</li>
-            <li><b>Choose Partition</b>：选 <code>Create/Modify partitions</code>；询问是否使用 GPT 时选 <code>No</code></li>
-            <li><b>cfdisk 分区</b>：<code>New</code> → <code>Primary</code> → 容量直接回车 → <code>Bootable</code> → <code>Write</code> → 输入 <code>yes</code> → <code>Quit</code></li>
-            <li><b>格式化</b>：选 <code>vda1</code> → 提示格式化时选 <code>ext4</code> → <code>Yes</code></li>
-            <li><b>引导与系统</b>：<code>Install GRUB</code> 选 <code>Yes</code>；<code>Install /system as read-write</code> 选 <code>Yes</code></li>
-            <li><b>完成</b>：进度到 100% 后点下面的「我已安装完成」（ApkStart 会自动重启并接管）</li>
+            <li data-i18n-html><b>启动菜单</b>：用 <kbd>↓</kbd> 选到 <code>Installation - Install Android-x86 to harddisk</code>，回车</li>
+            <li data-i18n-html><b>Choose Partition</b>：选 <code>Create/Modify partitions</code>；询问是否使用 GPT 时选 <code>No</code></li>
+            <li data-i18n-html><b>cfdisk 分区</b>：<code>New</code> → <code>Primary</code> → 容量直接回车 → <code>Bootable</code> → <code>Write</code> → 输入 <code>yes</code> → <code>Quit</code></li>
+            <li data-i18n-html><b>格式化</b>：选 <code>vda1</code> → 提示格式化时选 <code>ext4</code> → <code>Yes</code></li>
+            <li data-i18n-html><b>引导与系统</b>：<code>Install GRUB</code> 选 <code>Yes</code>；<code>Install /system as read-write</code> 选 <code>Yes</code></li>
+            <li data-i18n-html><b>完成</b>：进度到 100% 后点下面的「我已安装完成」（ApkStart 会自动重启并接管）</li>
           </ol>
-          <p class="guide-tip">如果之后提示 adb 未连接：在虚拟机窗口按 <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F1</kbd> 进入终端，执行
+          <p class="guide-tip" data-i18n-html>如果之后提示 adb 未连接：在虚拟机窗口按 <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F1</kbd> 进入终端，执行
             <code>setprop service.adb.tcp.port 5555</code>、<code>stop adbd</code>、<code>start adbd</code>，
             再按 <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F7</kbd> 回到图形界面。</p>
           <div class="guide-foot">
@@ -229,7 +245,7 @@
             <option value="window">竖屏窗口（可自由拉伸，记住每个应用的大小）</option>
             <option value="fullscreen">全屏（铺满屏幕，保持手机比例两侧留黑）</option>
           </select>
-          <span class="sub">随时按 <b>F11</b> 或右键托盘切换；全屏只放大窗口，不改变画面比例，切换不重启应用。</span>
+          <span class="sub" data-i18n-html>随时按 <b>F11</b> 或右键托盘切换；全屏只放大窗口，不改变画面比例，切换不重启应用。</span>
         </div>
         <div class="field">
           <label>自动全屏</label>
@@ -247,7 +263,7 @@
             <option value="portrait">强制竖屏（手机比例，适合刷短视频、看小说）</option>
             <option value="landscape">强制横屏（宽屏铺满，适合看剧、玩游戏）</option>
           </select>
-          <span class="sub">安卓的横竖屏是<b>虚拟手机面板的真实方向</b>决定的。面板方向和应用自己声明的方向不一致时，
+          <span class="sub" data-i18n-html>安卓的横竖屏是<b>虚拟手机面板的真实方向</b>决定的。面板方向和应用自己声明的方向不一致时，
             安卓只会给应用中间一条窄画面、两侧补黑 —— 换窗口大小、改分辨率都填不满。
             「跟随应用」会在安装 APK 时读出应用的方向，启动时自动把面板换成一致的那个，
             所以红果、墨读这类应用会正立且铺满。方向不对时才重启一次运行时（约十几秒），
@@ -269,7 +285,7 @@
             <option value="portrait">竖屏面板</option>
             <option value="landscape">横屏面板</option>
           </select>
-          <span class="sub">这是运行时<b>现在</b>用的物理面板方向，由上面那条策略自动写入。
+          <span class="sub" data-i18n-html>这是运行时<b>现在</b>用的物理面板方向，由上面那条策略自动写入。
             只有在「强制」模式下它才完全由你决定。</span>
         </div>
         <div class="field">
@@ -395,7 +411,7 @@
             <option value="ja-JP">日本語</option>
             <option value="ko-KR">한국어</option>
           </select>
-          <span class="sub">系统设置、权限弹窗、日期格式的语言。开机时注入到虚拟机，
+          <span class="sub" data-i18n-html>系统设置、权限弹窗、日期格式的语言。开机时注入到虚拟机，
             <b>下次重启运行时生效</b>。中文输入法不受此项影响，单独在下面开关。</span>
         </div>
         <div class="field switch-field">
@@ -423,7 +439,7 @@
         <div class="field switch-field">
           <div>
             <label>保留快速启动快照（推荐）</label>
-            <span class="sub">第二次打开应用只要几秒，代价是磁盘上多一份约 2–3 GB 的 <code>ram.bin</code>。磁盘紧张可以关掉：只影响启动速度，不影响应用与存档。</span>
+            <span class="sub" data-i18n-html>第二次打开应用只要几秒，代价是磁盘上多一份约 2–3 GB 的 <code>ram.bin</code>。磁盘紧张可以关掉：只影响启动速度，不影响应用与存档。</span>
           </div>
           <input type="checkbox" id="setKeepSnapshot" class="switch" />
         </div>
@@ -526,7 +542,7 @@
         <div class="field" id="fydeosHostField" hidden>
           <label>FydeOS 安卓子系统地址</label>
           <input id="setFydeosHost" type="text" placeholder="127.0.0.1:5555，或虚拟机的局域网 IP:5555" />
-          <span class="sub">FydeOS 跑在 VMware / VirtualBox 里时必填。最省事的配法：给虚拟机做端口转发
+          <span class="sub" data-i18n-html>FydeOS 跑在 VMware / VirtualBox 里时必填。最省事的配法：给虚拟机做端口转发
             （宿主 5555 → guest 5555），然后填 <b>127.0.0.1:5555</b>。
             直接装在本机的 FydeOS 可以留空（自动探测 arc:5555 等）。</span>
         </div>
@@ -725,7 +741,7 @@
             <button class="btn ghost sm" id="btnBrowseAvdDir">浏览</button>
             <button class="btn ghost sm" id="btnOpenAvdDir">打开</button>
           </div>
-          <span class="sub">真正吃盘的是这一块：数据分区（默认 6 GB，可在上面对大）+ 快速启动快照（约 2–3 GB）。
+          <span class="sub" data-i18n-html>真正吃盘的是这一块：数据分区（默认 6 GB，可在上面对大）+ 快速启动快照（约 2–3 GB）。
             磁盘紧张时把它指到另一个盘（如 D:），重启软件后生效；旧目录里的 <code>apkstart.avd</code> 可整体搬过去再删。</span>
         </div>
         <div class="field">
@@ -789,6 +805,7 @@
   </div>
 </div>
 
+<script src="i18n-dom.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

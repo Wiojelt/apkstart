@@ -1,4 +1,5 @@
 'use strict';
+const { t } = require('../../i18n');
 /**
  * 底座：网易 MuMu 模拟器 12（玩家版 / 多开）
  *
@@ -91,11 +92,10 @@ function spawnSyncSafe(cmd, args) {
 class MumuBackend extends Backend {
   static get id() { return 'mumu'; }
 
-  static get label() { return 'MuMu 模拟器 12（复用已安装的网易模拟器）'; }
+  static get label() { return t('MuMu 模拟器 12（复用已安装的网易模拟器）'); }
 
   static get summary() {
-    return '不下载任何安卓镜像：直接驱动你电脑上已经装好的 MuMu 模拟器 12，'
-      + '把它变成 ApkStart 的运行时。自带 ARM 兼容层，冷启动约 10~20 秒。';
+    return t('不下载任何安卓镜像：直接驱动你电脑上已经装好的 MuMu 模拟器 12，把它变成 ApkStart 的运行时。自带 ARM 兼容层，冷启动约 10~20 秒。');
   }
 
   static get embedCapable() { return true; }
@@ -179,7 +179,7 @@ class MumuBackend extends Backend {
 
   async probe() {
     const loc = this.locate();
-    if (!loc) return { ok: true, found: false, detail: '没有找到 MuMuManager.exe' };
+    if (!loc) return { ok: true, found: false, detail: t('没有找到 MuMuManager.exe') };
     const info = await this.manager(['version'], { timeout: 8000 });
     return {
       ok: true, found: true, path: loc.manager, detail: (info && info.version) || '', root: loc.root,
@@ -188,8 +188,8 @@ class MumuBackend extends Backend {
 
   async check() {
     const loc = this.locate();
-    if (!loc) return { ok: false, reason: '没有找到 MuMu 模拟器（可在设置里指定安装目录）', needs: 'mumu' };
-    if (!loc.adb) return { ok: false, reason: 'MuMu 目录里找不到 adb.exe', needs: 'mumu' };
+    if (!loc) return { ok: false, reason: t('没有找到 MuMu 模拟器（可在设置里指定安装目录）'), needs: 'mumu' };
+    if (!loc.adb) return { ok: false, reason: t('MuMu 目录里找不到 adb.exe'), needs: 'mumu' };
     return { ok: true, path: loc.manager };
   }
 
@@ -214,7 +214,7 @@ class MumuBackend extends Backend {
       if (Date.now() - lastNotice > 8000) {
         lastNotice = Date.now();
         const st = (info && info.player_state) || 'starting';
-        onLog(`MuMu 模拟器启动中… ${st} ${Math.round((Date.now() - t0) / 1000)}s`);
+        onLog(t('MuMu 模拟器启动中… {state} {sec}s', { state: st, sec: Math.round((Date.now() - t0) / 1000) }));
       }
       // eslint-disable-next-line no-await-in-loop
       await sleep(1500);
@@ -225,16 +225,16 @@ class MumuBackend extends Backend {
   async ensure({ onLog = () => {} } = {}) {
     const loc = this.locate();
     if (!loc) {
-      return { ok: false, error: '没有找到 MuMu 模拟器。请先安装网易 MuMu 模拟器 12，或在设置里指定它的安装目录。' };
+      return { ok: false, error: t('没有找到 MuMu 模拟器。请先安装网易 MuMu 模拟器 12，或在设置里指定它的安装目录。') };
     }
     let info = await this.info({ fresh: true });
     const wasRunning = !!(info && info.is_android_started);
     if (!wasRunning) {
-      onLog(info && info.is_process_started ? 'MuMu 模拟器正在开机…' : '正在启动 MuMu 模拟器…');
+      onLog(info && info.is_process_started ? t('MuMu 模拟器正在开机…') : t('正在启动 MuMu 模拟器…'));
       await this.manager(['control', 'launch', '-v', String(this.index)], { timeout: 30000 });
       this._stoppedByUs = false;
       info = await this.waitReady({ onLog });
-      if (!info) return { ok: false, error: 'MuMu 模拟器启动超时（120 秒内没有进入安卓桌面）' };
+      if (!info) return { ok: false, error: t('MuMu 模拟器启动超时（120 秒内没有进入安卓桌面）') };
     }
     this.serial = `${info.adb_host_ip || '127.0.0.1'}:${info.adb_port}`;
     this.adbPath = loc.adb;
@@ -333,8 +333,8 @@ class MumuBackend extends Backend {
     const info = this._info;
     return {
       total: info && info.disk_size_bytes ? info.disk_size_bytes : 0,
-      items: [{ label: 'MuMu 实例磁盘', bytes: info && info.disk_size_bytes ? info.disk_size_bytes : 0 }],
-      note: 'MuMu 的镜像由模拟器自己管理，apkstart 不下载、不清理，卸载应用请用 MuMu 自带界面。',
+      items: [{ label: t('MuMu 实例磁盘'), bytes: info && info.disk_size_bytes ? info.disk_size_bytes : 0 }],
+      note: t('MuMu 的镜像由模拟器自己管理，apkstart 不下载、不清理，卸载应用请用 MuMu 自带界面。'),
     };
   }
 
@@ -343,7 +343,7 @@ class MumuBackend extends Backend {
     return {
       ok: !!(info && info.disk_size_bytes),
       dataMB: info && info.disk_size_bytes ? Math.round(info.disk_size_bytes / (1024 * 1024)) : 0,
-      note: '数据分区由 MuMu 管理，改大小请在 MuMu 设置里操作。',
+      note: t('数据分区由 MuMu 管理，改大小请在 MuMu 设置里操作。'),
     };
   }
 

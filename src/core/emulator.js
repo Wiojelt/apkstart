@@ -17,6 +17,7 @@ const store = require('./store');
 const { Provisioner } = require('./provision');
 const doctor = require('./doctor');
 const userdata = require('./userdata');
+const { t } = require('../i18n');
 
 const AVD_NAME = 'apkstart';
 const SNAPSHOT_NAME = 'apkstart';
@@ -33,13 +34,13 @@ function describeExitCode(code) {
   // 不能当成 0 报「正常退出」，但也谈不上异常，返回空串让调用方原样显示。
   if (code == null) return '';
   switch (Number(code)) {
-    case 0: return '正常退出';
-    case 1: return '启动参数或环境错误';
-    case 3221225477: return '0xC0000005 访问冲突，渲染后端崩溃';
-    case 3221225725: return '0xC00000FD 栈溢出';
-    case 3221225781: return '0xC0000135 缺少 DLL（VC++ 运行库 / 运行时组件被杀毒删除）';
-    case 3221225506: return '0xC0000022 拒绝访问（驱动或权限问题）';
-    case 3221225595: return '0xC000007B 镜像位数不匹配或 DLL 损坏';
+    case 0: return t('正常退出');
+    case 1: return t('启动参数或环境错误');
+    case 3221225477: return t('0xC0000005 访问冲突，渲染后端崩溃');
+    case 3221225725: return t('0xC00000FD 栈溢出');
+    case 3221225781: return t('0xC0000135 缺少 DLL（VC++ 运行库 / 运行时组件被杀毒删除）');
+    case 3221225506: return t('0xC0000022 拒绝访问（驱动或权限问题）');
+    case 3221225595: return t('0xC000007B 镜像位数不匹配或 DLL 损坏');
     default: return '';
   }
 }
@@ -266,7 +267,7 @@ class EmulatorEngine {
       this.clearLocks(avdDir);
       return 0;
     }
-    onLog(`清理 ${pids.size} 个残留模拟器进程`);
+    onLog(t('清理 {n} 个残留模拟器进程', { n: pids.size }));
     await Promise.all([...pids].map((pid) => new Promise((r) => {
       execFile('taskkill', ['/PID', String(pid), '/T', '/F'], { windowsHide: true }, () => r());
     })));
@@ -493,18 +494,18 @@ class EmulatorEngine {
     const r = spawnSync(exe, [op, '-f', 'raw', ...rest], {
       cwd: path.dirname(exe), windowsHide: true, encoding: 'utf8',
     });
-    if (r.status !== 0) throw new Error(`qemu-img ${op} 失败: ${(r.stderr || '').trim() || r.status}`);
+    if (r.status !== 0) throw new Error(t('qemu-img {op} 失败: {detail}', { op, detail: (r.stderr || '').trim() || r.status }));
   }
 
   /** emulator 自带 resize2fs.exe（cygwin 版，必须在 bin64 目录下跑才能找到 DLL） */
   _resize2fs(img) {
     const bin = path.join(path.dirname(this.locate().emulatorExe), 'bin64');
     const exe = path.join(bin, 'resize2fs.exe');
-    if (!fs.existsSync(exe)) throw new Error('缺少 resize2fs.exe');
+    if (!fs.existsSync(exe)) throw new Error(t('缺少 resize2fs.exe'));
     const r = spawnSync(exe, [img], {
       cwd: bin, windowsHide: true, encoding: 'utf8', timeout: 180000,
     });
-    if (r.status !== 0) throw new Error(`resize2fs 失败: ${(r.stderr || '').trim() || r.status}`);
+    if (r.status !== 0) throw new Error(t('resize2fs 失败: {detail}', { detail: (r.stderr || '').trim() || r.status }));
   }
 
   /** emulator 依赖这些环境变量定位 SDK / AVD；中文路径一律转 8.3 短路径 */
@@ -668,7 +669,7 @@ class EmulatorEngine {
       this.log(`emulator exit ${code}${meaning ? `（${meaning}）` : ''}`);
       this._logWrite(logFile, `emulator exit ${code}${meaning ? `（${meaning}）` : ''}\n`);
       this.proc = null;
-      onLog(`运行时已退出（code=${code}${meaning ? `，${meaning}` : ''}）`);
+      onLog(meaning ? t('运行时已退出（code={code}，{meaning}）', { code, meaning }) : t('运行时已退出（code={code}）', { code }));
     });
     proc.on('error', (e) => {
       this.log(`spawn error: ${e.message}`);
@@ -1030,10 +1031,10 @@ class EmulatorEngine {
     }
 
     const loc = this.locate();
-    if (!loc.emulatorExe) throw new Error('未安装运行时引擎，请先在「运行时」页完成部署');
+    if (!loc.emulatorExe) throw new Error(t('未安装运行时引擎，请先在「运行时」页完成部署'));
     const choice = this.imageChoice();
     if (choice.compat ? !this.provisioner.playImageInfo().ok : !this.provisioner.systemImageInfo().ok) {
-      throw new Error('系统镜像未就绪，请先在「运行时」页下载 Android 系统镜像');
+      throw new Error(t('系统镜像未就绪，请先在「运行时」页下载 Android 系统镜像'));
     }
 
     const s = this.settings;
@@ -1046,16 +1047,13 @@ class EmulatorEngine {
     const diskMB = doctor.freeDiskMB(loc.root);
     const needMB = 2500;
     if (avdFreeMB && avdFreeMB < needMB) {
-      const msg = `磁盘空间不足：安卓数据目录（${avdHome}）所在磁盘只剩 ${(avdFreeMB / 1024).toFixed(1)} GB，`
-        + `运行时至少要 ${(needMB / 1024).toFixed(1)} GB 可用。请在「设置 → 系统集成 → 安卓数据目录」`
-        + '把它改到空间充足的盘（例如 D:），或先清理磁盘。你的应用与存档不会被自动删除。';
+      const msg = t('磁盘空间不足：安卓数据目录（{dir}）所在磁盘只剩 {free} GB，运行时至少要 {need} GB 可用。请在「设置 → 系统集成 → 安卓数据目录」把它改到空间充足的盘（例如 D:），或先清理磁盘。你的应用与存档不会被自动删除。', { dir: avdHome, free: (avdFreeMB / 1024).toFixed(1), need: (needMB / 1024).toFixed(1) });
       this.log(msg);
       onLog(msg);
       return { ok: false, error: msg, needsSpace: true, attempts: [] };
     }
     if (diskMB && diskMB < 300) {
-      const msg = `运行时目录（${loc.root}）所在磁盘只剩 ${(diskMB / 1024).toFixed(1)} GB，`
-        + '连日志和临时文件都写不下。请清理磁盘，或把「运行时数据目录」也换到别的盘。';
+      const msg = t('运行时目录（{dir}）所在磁盘只剩 {free} GB，连日志和临时文件都写不下。请清理磁盘，或把「运行时数据目录」也换到别的盘。', { dir: loc.root, free: (diskMB / 1024).toFixed(1) });
       this.log(msg);
       onLog(msg);
       return { ok: false, error: msg, needsSpace: true, attempts: [] };
@@ -1097,7 +1095,7 @@ class EmulatorEngine {
       const rank = (v) => (v.gpu === badGpu ? 1 : 0);
       variants.sort((a, b) => rank(a) - rank(b));
       if (variants[0] && variants[0].gpu === badGpu && variants.length > 1) {
-        onLog(`上次 ${badGpu} 渲染后端启动即崩溃，本次改用 ${variants[1].gpu} 先试`);
+        onLog(t('上次 {bad} 渲染后端启动即崩溃，本次改用 {next} 先试', { bad: badGpu, next: variants[1].gpu }));
       }
     }
 
@@ -1129,7 +1127,7 @@ class EmulatorEngine {
       // 日志也按轮切分：内存日志是跨轮累积的，第 1 轮的崩溃行若留在尾部，
       // 第 2 轮（比如换后端后端口冲突）会被误诊成同一个崩溃。
       const logStart = this._log.length;
-      onLog(`启动运行时（第 ${i + 1}/${variants.length} 次：${plan.label}）…`);
+      onLog(t('启动运行时（第 {i}/{n} 次：{plan}）…', { i: i + 1, n: variants.length, plan: plan.label }));
 
       // eslint-disable-next-line no-await-in-loop
       const avd = this.ensureAvd({
@@ -1159,11 +1157,11 @@ class EmulatorEngine {
         const d = doctor.diagnose(this._attemptLines(logStart, 60));
         this.attempts.push({ plan: plan.label, diagnosis: d.code, exitCode: this.lastExitCode });
         this.lastDiagnosis = d;
-        lastError = `${d.title}：${d.hint}`;
+        lastError = t('{title}：{hint}', { title: d.title, hint: d.hint });
         // 磁盘写满不是「换组参数就能好」的问题：继续重试只会反复失败，
         // 而且历史上最后那组参数带 wipe，会把用户数据一起抹掉。直接收工、如实报错。
         if (d.code === 'DISK_FULL') {
-          onLog('磁盘空间不足，已停止重试（不会动你的应用与存档）。');
+          onLog(t('磁盘空间不足，已停止重试（不会动你的应用与存档）。'));
           this._persistFailure({ profile, why: 'disk-full' });
           return { ok: false, error: lastError, needsSpace: true, attempts: this.attempts, exitCode: this.lastExitCode };
         }
@@ -1171,7 +1169,7 @@ class EmulatorEngine {
         if (['ACCEL', 'GPU_INIT', 'GPU_MODE', 'IMAGE', 'DLL', 'ACCESS_VIOLATION'].includes(d.code)) {
           try { this.provisioner.invalidateEnvCache(); } catch (_) { /* ignore */ }
         }
-        onLog(`${d.title}，自动换一组参数重试…`);
+        onLog(t('{reason}，自动换一组参数重试…', { reason: d.title }));
         this._noteGpuFailure(plan);
         continue;
       }
@@ -1215,7 +1213,7 @@ class EmulatorEngine {
         // 每 15 秒一条进度：以前用「取模」判断，自适应间隔下会连着打两三条重复的
         if (Date.now() - lastNotice > 15000) {
           lastNotice = Date.now();
-          onLog(`正在开机… ${Math.round((Date.now() - started) / 1000)}s`);
+          onLog(t('正在开机… {s}s', { s: Math.round((Date.now() - started) / 1000) }));
         }
         // eslint-disable-next-line no-await-in-loop
         await sleep(interval);
@@ -1230,7 +1228,7 @@ class EmulatorEngine {
         // job 对象会连带杀掉子进程），下次打开有没有快照直接决定是 25 秒还是 7 秒。
         // 装完新应用时 installer 会作废快照，避免"重启后应用消失"。
         this.snapshotWorthSaving = true;
-        onLog(`运行时就绪（${Math.round(bootMs / 1000)}s，${plan.label}）`);
+        onLog(t('运行时就绪（{s}s，{plan}）', { s: Math.round(bootMs / 1000), plan: plan.label }));
         // 开机成功不等于能用：顺手体检网络。虚拟机没网时，需要联网的页面会一直黑屏，
         // 用户只会说「这个应用黑屏」，很难联想到是网络。这里主动查一次并说清楚。
         //
@@ -1244,9 +1242,9 @@ class EmulatorEngine {
           network = await this.checkNetwork('', { waitMs: 12000, interval: 3000 });
         } catch (_) { /* 体检失败不算启动失败 */ }
         if (network && !network.ok) {
-          onLog('⚠ 安卓虚拟机暂时没连上网（Wi-Fi 未关联或没拿到地址）。'
+          onLog(t('⚠ 安卓虚拟机暂时没连上网（Wi-Fi 未关联或没拿到地址）。'
             + '需要联网的应用打开后可能一直黑屏：稍后重开应用即可；'
-            + '若持续无网，可在「设置 → 修复网络」重连（不会删除已装应用）。');
+            + '若持续无网，可在「设置 → 修复网络」重连（不会删除已装应用）。'));
         }
         return {
           ok: true, serial: this.serial, port, accel: accelInfo, logFile,
@@ -1258,8 +1256,8 @@ class EmulatorEngine {
       const d = fatal ? (this.lastDiagnosis || doctor.diagnose(attemptLines)) : doctor.diagnose(attemptLines);
       this.attempts.push({ plan: plan.label, diagnosis: d.code, timeout: !fatal, exitCode: this.lastExitCode });
       this.lastDiagnosis = d;
-      lastError = fatal ? `${d.title}：${d.hint}` : '开机超时（可能是首次引导较慢或硬件加速未生效）';
-      onLog(`${lastError}，自动换一组参数重试…`);
+      lastError = fatal ? t('{title}：{hint}', { title: d.title, hint: d.hint }) : t('开机超时（可能是首次引导较慢或硬件加速未生效）');
+      onLog(t('{reason}，自动换一组参数重试…', { reason: lastError }));
       this._noteGpuFailure(plan);
       // eslint-disable-next-line no-await-in-loop
       await this.killAttempt();
@@ -1277,9 +1275,9 @@ class EmulatorEngine {
       },
     });
     const err = new Error(
-      `运行时多次尝试仍未能启动（${d.title}）。\n${d.hint}\n\n`
-      + `已尝试：${this.attempts.map((a) => `${a.plan} → ${a.diagnosis}`).join('；')}\n`
-      + `诊断报告：${report.file}`,
+      `${t('运行时多次尝试仍未能启动（{title}）。', { title: d.title })}\n${d.hint}\n\n`
+      + `${t('已尝试：{list}', { list: this.attempts.map((a) => `${a.plan} → ${a.diagnosis}`).join('; ') })}\n`
+      + t('诊断报告：{file}', { file: report.file }),
     );
     err.diagnosis = d;
     err.report = report.file;

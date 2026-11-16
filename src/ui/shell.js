@@ -2,6 +2,8 @@
 /* 应用窗口标题栏：只有 旋转 / 最小化 / 最大化 / 关闭，其余设置都在 ApkStart 主界面 */
 const api = window.apkstart;
 const $ = (id) => document.getElementById(id);
+const t = window.t || ((s) => s);
+if (window.translateDom) window.translateDom(document.body);
 
 const btn = {
   rotate: $('btnRotate'),
@@ -33,7 +35,7 @@ window.addEventListener('keydown', (e) => {
 
 function applyState(s) {
   if (!s) return;
-  $('appName').textContent = s.label || '应用';
+  $('appName').textContent = s.label || t('应用');
   $('bootName').textContent = s.label || '';
   const icon = s.iconUrl || '';
   if (icon) {

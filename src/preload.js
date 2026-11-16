@@ -3,7 +3,19 @@ const { contextBridge, ipcRenderer, webUtils } = require('electron');
 
 const invoke = (channel, payload) => ipcRenderer.invoke(channel, payload);
 
+// 界面语言：preload 每次加载（含切换语言后的 reload）都按当前设置重新读取
+const i18n = require('./i18n');
+i18n.setLang(require('./core/store').getSettings().language);
+
 contextBridge.exposeInMainWorld('apkstart', {
+  i18n: {
+    lang: i18n.getLang(),
+    tag: i18n.localeTag(),
+    languages: i18n.LANGUAGES.map((l) => ({ ...l })),
+    t: (src, vars) => i18n.t(src, vars),
+  },
+  setLanguage: (lang) => invoke('settings:setLanguage', lang),
+
   info: () => invoke('app:info'),
   listApps: () => invoke('apps:list'),
   pickApk: () => invoke('apk:pick'),
