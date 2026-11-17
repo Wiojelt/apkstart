@@ -3,7 +3,7 @@
  * ApkStart 主进程
  * 职责：窗口 / 托盘 / 单实例 / 命令行分发（双击 apk、桌面快捷方式启动）/ IPC
  */
-const { app, BrowserWindow, ipcMain, dialog, Tray, Menu, shell, nativeImage, screen, globalShortcut } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, Tray, Menu, shell, nativeImage, screen, globalShortcut, nativeTheme } = require('electron');
 const fs = require('fs');
 const path = require('path');
 
@@ -666,10 +666,19 @@ function enableWindowsFeature(feature) {
 
 // ---------------- 主窗口 ----------------
 
+function getEffectiveTheme(theme) {
+  let t = theme || (store.getSettings() && store.getSettings().theme) || 'dark';
+  if (t === 'system') {
+    return (nativeTheme && nativeTheme.shouldUseDarkColors) ? 'dark' : 'light';
+  }
+  return t;
+}
+
 function getTitleBarOverlay(theme) {
-  if (theme === 'light') {
+  const eff = getEffectiveTheme(theme);
+  if (eff === 'light') {
     return { color: '#f8fafc', symbolColor: '#0f172a', height: 44 };
-  } else if (theme === 'nord') {
+  } else if (eff === 'nord') {
     return { color: '#242933', symbolColor: '#eceff4', height: 44 };
   } else {
     // dark (default)
@@ -678,23 +687,47 @@ function getTitleBarOverlay(theme) {
 }
 
 function getWindowBgColor(theme) {
-  if (theme === 'light') return '#f8fafc';
-  if (theme === 'nord') return '#242933';
+  const eff = getEffectiveTheme(theme);
+  if (eff === 'light') return '#f8fafc';
+  if (eff === 'nord') return '#242933';
   return '#0d1117';
+}
+
+function applyThemeToWindows(theme) {
+  const eff = getEffectiveTheme(theme);
+  if (nativeTheme) {
+    nativeTheme.themeSource = (eff === 'light') ? 'light' : 'dark';
+  }
+  const overlay = getTitleBarOverlay(eff);
+  const bg = getWindowBgColor(eff);
+  for (const win of BrowserWindow.getAllWindows()) {
+    try {
+      if (!win.isDestroyed()) {
+        if (typeof win.setTitleBarOverlay === 'function') {
+          win.setTitleBarOverlay(overlay);
+        }
+        win.setBackgroundColor(bg);
+      }
+    } catch (_) { /* ignore */ }
+  }
 }
 
 function createWindow({ show = true } = {}) {
   const curTheme = (store.getSettings() && store.getSettings().theme) || 'dark';
+  const eff = getEffectiveTheme(curTheme);
+  if (nativeTheme) {
+    nativeTheme.themeSource = (eff === 'light') ? 'light' : 'dark';
+  }
   mainWindow = new BrowserWindow({
     width: Number(process.env.APKSTART_WIN_W) || 1140,
     height: Number(process.env.APKSTART_WIN_H) || 740,
     minWidth: 900,
     minHeight: 560,
     show: false,
-    backgroundColor: getWindowBgColor(curTheme),
+    backgroundColor: getWindowBgColor(eff),
     frame: false,
     titleBarStyle: 'hidden',
-    titleBarOverlay: getTitleBarOverlay(curTheme),
+    titleBarOverlay: getTitleBarOverlay(eff),
     icon: nativeImage.createFromBuffer(ICON_PNG),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -1353,25 +1386,13 @@ function registerIpc() {
     return { ok: true, language: code };
   });
   ipcMain.handle('titlebar:setTheme', (_e, theme) => {
-    if (mainWindow && !mainWindow.isDestroyed()) {
-      try {
-        if (typeof mainWindow.setTitleBarOverlay === 'function') {
-          mainWindow.setTitleBarOverlay(getTitleBarOverlay(theme));
-        }
-        mainWindow.setBackgroundColor(getWindowBgColor(theme));
-      } catch (_) { /* ignore */ }
-    }
+    applyThemeToWindows(theme);
     return { ok: true };
   });
   ipcMain.handle('settings:set', (_e, patch) => {
     const next = store.saveSettings(patch);
-    if (patch && patch.theme && mainWindow && !mainWindow.isDestroyed()) {
-      try {
-        if (typeof mainWindow.setTitleBarOverlay === 'function') {
-          mainWindow.setTitleBarOverlay(getTitleBarOverlay(patch.theme));
-        }
-        mainWindow.setBackgroundColor(getWindowBgColor(patch.theme));
-      } catch (_) { /* ignore */ }
+    if (patch && patch.theme) {
+      applyThemeToWindows(patch.theme);
     }
     if (patch && patch.autoStart !== undefined) applyAutoStart();
     if (patch && patch.display && appWin && appWin.isOpen) {
@@ -2435,6 +2456,14 @@ if (!gotLock) {
     registerIpc();
     createWindow({ show: !parseArgs(process.argv).silent });
     buildTray();
+    if (nativeTheme) {
+      nativeTheme.on('updated', () => {
+        const cur = (store.getSettings() && store.getSettings().theme) || 'dark';
+        if (cur === 'system') {
+          applyThemeToWindows('system');
+        }
+      });
+    }
     applyAutoStart();
 
     // 老版本安装的应用没有 orientation 字段（那时还没这个功能）。
