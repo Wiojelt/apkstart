@@ -15,6 +15,7 @@ contextBridge.exposeInMainWorld('apkstart', {
     t: (src, vars) => i18n.t(src, vars),
   },
   setLanguage: (lang) => invoke('settings:setLanguage', lang),
+  setTitleBarTheme: (theme) => invoke('titlebar:setTheme', theme),
 
   info: () => invoke('app:info'),
   listApps: () => invoke('apps:list'),

@@ -50,7 +50,9 @@
   </div>
 </header>
 
-<main class="shell">
+<div class="app-views">
+  <div class="view main-view" id="mainView">
+    <main class="shell">
   <section class="toolbar">
     <div class="search">
       <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -96,11 +98,10 @@
       <span class="status-item" id="statusDevice"></span>
       <span class="sep"></span>
       <span class="status-item" id="statusStats"></span>
-      <span class="sep"></span>
-      <a class="status-item powered-link" href="https://github.com/RoutineMiku/apkstart" target="_blank" rel="noopener">Powered by RoutineMiku</a>
     </div>
   </footer>
-</main>
+    </main>
+  </div>
 
 <!-- 启动欢迎卡：替代原来散落的各种启动小提示 -->
 <div class="modal-mask welcome-mask" id="welcomeMask" hidden>
@@ -144,684 +145,639 @@
 <!-- 语言菜单（标题栏地球按钮） -->
 <div class="ctxmenu lang-menu" id="langMenu" role="menu"></div>
 
-<!-- 设置 -->
-<div class="modal-mask" id="settingsMask">
-  <div class="modal">
-    <header class="modal-head">
-      <h2>设置</h2>
-      <button class="icon-btn" id="btnCloseSettings">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg>
+
+  <!-- 设置全页面视图 -->
+  <div class="view settings-view" id="settingsView" hidden>
+    <nav class="settings-nav">
+      <button class="settings-nav-btn" id="btnBackFromSettings" title="返回">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <span>返回</span>
       </button>
-    </header>
-    <div class="modal-body">
-      <div class="group" id="appearanceGroup">
-        <div class="group-title">Görünüm ve Dil</div>
-        <div class="field two">
-          <div>
-            <label for="setTheme">Tema / Theme</label>
-            <select id="setTheme">
-              <option value="dark">Karanlık (Varsayılan)</option>
-              <option value="nord">Gece Mavisi (Nord)</option>
-              <option value="light">Aydınlık</option>
-              <option value="system">Sistem Teması</option>
-            </select>
-          </div>
-          <div>
-            <label for="setLanguage">Dil / Language</label>
-            <select id="setLanguage"></select>
-          </div>
-        </div>
-        <span class="sub">Tema ve dil seçiminiz tüm pencerelerde anında uygulanır.</span>
-      </div>
+      <button class="settings-nav-btn" id="btnHomeFromSettings" title="主页">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>主页</span>
+      </button>
+      <span class="settings-nav-title">设置</span>
+      <span class="settings-nav-spacer"></span>
+    </nav>
 
-      <div class="group" id="runtimeGroup">
-        <div class="group-title">运行时与环境</div>
-        <div class="field">
-          <label>运行状态</label>
-          <div class="row" style="align-items:center;">
-            <span class="inline-note" id="setupStateText">正在检查…</span>
-            <span style="flex:1"></span>
-            <button class="btn primary sm" id="btnDeployAll">一键完成</button>
-            <button class="btn ghost sm" id="btnSetupAdvanced">高级：连接已有运行时</button>
-          </div>
-          <span class="sub" id="setupNote">全自动：无需选择镜像、无需启用加速、无需调内存</span>
-        </div>
-        <div class="field">
-          <div class="steps" id="setupSteps"></div>
-        </div>
-        <div id="envCheck" class="env-check" hidden></div>
+    <div class="settings-page-body">
+      <aside class="settings-sidebar">
+        <button class="settings-tab active" data-tab="paneAppearance">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>
+          <span>外观与语言</span>
+        </button>
+        <button class="settings-tab" data-tab="paneRuntime">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          <span>运行时与环境</span>
+        </button>
+        <button class="settings-tab" data-tab="paneDisplay">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="2" width="16" height="20" rx="2"/><circle cx="12" cy="18" r="1"/></svg>
+          <span>应用窗口</span>
+        </button>
+        <button class="settings-tab" data-tab="paneStorage">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+          <span>存储与维护</span>
+        </button>
+        <button class="settings-tab" data-tab="paneAbout">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <span>关于与支持</span>
+        </button>
+      </aside>
 
-        <div class="setup-guide" id="setupGuide" hidden>
-          <h2>安装 Android 到虚拟磁盘</h2>
-          <p class="guide-sub">虚拟机窗口已打开。按下面 6 步操作一次，之后 ApkStart 会直接从磁盘启动，不再需要镜像。</p>
-          <ol class="guide-list">
-            <li data-i18n-html><b>启动菜单</b>：用 <kbd>↓</kbd> 选到 <code>Installation - Install Android-x86 to harddisk</code>，回车</li>
-            <li data-i18n-html><b>Choose Partition</b>：选 <code>Create/Modify partitions</code>；询问是否使用 GPT 时选 <code>No</code></li>
-            <li data-i18n-html><b>cfdisk 分区</b>：<code>New</code> → <code>Primary</code> → 容量直接回车 → <code>Bootable</code> → <code>Write</code> → 输入 <code>yes</code> → <code>Quit</code></li>
-            <li data-i18n-html><b>格式化</b>：选 <code>vda1</code> → 提示格式化时选 <code>ext4</code> → <code>Yes</code></li>
-            <li data-i18n-html><b>引导与系统</b>：<code>Install GRUB</code> 选 <code>Yes</code>；<code>Install /system as read-write</code> 选 <code>Yes</code></li>
-            <li data-i18n-html><b>完成</b>：进度到 100% 后点下面的「我已安装完成」（ApkStart 会自动重启并接管）</li>
-          </ol>
-          <p class="guide-tip" data-i18n-html>如果之后提示 adb 未连接：在虚拟机窗口按 <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F1</kbd> 进入终端，执行
-            <code>setprop service.adb.tcp.port 5555</code>、<code>stop adbd</code>、<code>start adbd</code>，
-            再按 <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F7</kbd> 回到图形界面。</p>
-          <div class="guide-foot">
-            <button class="btn primary" id="btnMarkInstalled">我已安装完成</button>
-            <button class="btn ghost" id="btnGuideClose">稍后再说</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="group">
-        <div class="group-title">自动模式（默认，无需设置）</div>
-        <div class="field">
-          <label>本机自适应参数</label>
-          <div class="inline-note" id="autoProfileText">正在检测…</div>
-          <span class="sub" data-i18n-html>内存、核心数、渲染后端、端口、加速方式全部自动选择；启动失败会自动降级重试，不需要手动改。
-            ApkStart 用<b>专用 adb 服务端口 5044</b>（你系统里自己的 adb 是 5037），所以命令行里
-            <code>adb devices</code> 看不到这台安卓设备 —— 这是刻意的隔离。想连的话用
-            <code>$env:ANDROID_ADB_SERVER_PORT=5044</code> 再执行 adb。
-            注意：别对着 5555 端口手动 <code>adb connect</code>，那会在正在运行的应用上弹出
-            「允许 USB 调试吗」的系统弹窗。</span>
-        </div>
-        <div class="field">
-          <label>磁盘总占用（运行时 + 安卓数据 + 缓存）</label>
-          <div class="row">
-            <span class="inline-note" id="usageText">正在统计…</span>
-            <button class="btn ghost sm" id="btnCleanup">清理可回收文件</button>
-            <button class="btn ghost sm" id="btnLeftovers" title="扫描并清掉旧版本留下的程序目录、失效的卸载项和更新临时文件">清理旧版本残留</button>
-            <button class="btn ghost sm" id="btnRepairNetwork" title="安卓虚拟机没有网络时（应用里联网页面一直黑屏/转圈），用这个把安卓数据重置掉来修网络。应用清单会保留，点开应用会自动重装">修复网络</button>
-            <button class="btn ghost sm danger" id="btnResetData" title="清空安卓 /data 用户数据 + 已装应用 + 快速启动快照，还原成刚装好系统的干净状态">重置安卓数据</button>
-          </div>
-          <label class="checkbox-inline">
-            <input type="checkbox" id="chkCleanSnapshots" />
-            <span>连当前 AVD 的快速启动快照也一起清（会先停运行时，能真正回收几 GB 快照）</span>
-          </label>
-          <span class="sub">系统镜像全机共享一份，应用数据用差分层保存；旧镜像、旧快照、日志和锁文件都可回收。日志超过上限会自动滚动，不会无限增长。「重置安卓数据」会真实删除数 GB 用户数据，仅保留系统本身。</span>
-        </div>
-        <div class="runtime-actions">
-          <button class="btn ghost sm" id="btnDiagnostics">导出诊断报告</button>
-          <button class="btn ghost sm" id="btnRebuildShortcuts">重建快捷方式</button>
-          <span class="inline-note">诊断报告用于排障；重建会补齐桌面 + 开始菜单入口</span>
-        </div>
-        <div class="field switch-field">
-          <div>
-            <label>开机自动启动（默认开启）</label>
-            <span class="sub">随 Windows 登录常驻托盘，双击桌面图标秒开应用，无需手动启动。</span>
-          </div>
-          <input type="checkbox" id="setAutoStart" class="switch" />
-        </div>
-      </div>
-
-      <div class="group">
-        <div class="group-title">应用窗口</div>
-        <div class="field">
-          <label>显示模式</label>
-          <select id="setDisplayMode">
-            <option value="window">竖屏窗口（可自由拉伸，记住每个应用的大小）</option>
-            <option value="fullscreen">全屏（铺满屏幕，保持手机比例两侧留黑）</option>
-          </select>
-          <span class="sub" data-i18n-html>随时按 <b>F11</b> 或右键托盘切换；全屏只放大窗口，不改变画面比例，切换不重启应用。</span>
-        </div>
-        <div class="field">
-          <label>自动全屏</label>
-          <select id="setAutoFullscreen">
-            <option value="off">关闭（按上面选的显示模式走）</option>
-            <option value="on">打开 · 每次启动应用都自动全屏</option>
-          </select>
-          <span class="sub">打开后，每次点开应用直接铺满屏幕，不用再按 F11。配合下面的「横屏」使用效果最好
-            —— 横屏面板的宽高比本来就贴合屏幕，全屏不会留黑边。</span>
-        </div>
-        <div class="field">
-          <label>屏幕方向</label>
-          <select id="setOrientationMode">
-            <option value="auto">跟随应用（推荐 · 自动选横竖屏，画面铺满不留黑边）</option>
-            <option value="portrait">强制竖屏（手机比例，适合刷短视频、看小说）</option>
-            <option value="landscape">强制横屏（宽屏铺满，适合看剧、玩游戏）</option>
-          </select>
-          <span class="sub" data-i18n-html>安卓的横竖屏是<b>虚拟手机面板的真实方向</b>决定的。面板方向和应用自己声明的方向不一致时，
-            安卓只会给应用中间一条窄画面、两侧补黑 —— 换窗口大小、改分辨率都填不满。
-            「跟随应用」会在安装 APK 时读出应用的方向，启动时自动把面板换成一致的那个，
-            所以红果、墨读这类应用会正立且铺满。方向不对时才重启一次运行时（约十几秒），
-            之后再打开同一方向的应用都是秒进。</span>
-        </div>
-        <div class="field">
-          <label>平板排版</label>
-          <select id="setTabletMode">
-            <option value="on">打开（推荐 · 逻辑密度 190dpi，sw606dp 走平板排版）</option>
-            <option value="off">关闭（镜像默认密度，手机排版）</option>
-          </select>
-          <span class="sub">720 宽按 190dpi 算等于 606dp，正好越过 Android 的 600dp 平板断点，
-            红果短剧的双列剧集页、设置页的分栏都只在这个排版下出现。关掉会回到手机排版
-            （字更大、信息更少）。切换后下次打开应用生效。</span>
-        </div>
-        <div class="field">
-          <label>当前面板方向</label>
-          <select id="setLandscape">
-            <option value="portrait">竖屏面板</option>
-            <option value="landscape">横屏面板</option>
-          </select>
-          <span class="sub" data-i18n-html>这是运行时<b>现在</b>用的物理面板方向，由上面那条策略自动写入。
-            只有在「强制」模式下它才完全由你决定。</span>
-        </div>
-        <div class="field">
-          <label>窗口承载方式</label>
-          <select id="setWindowEmbed">
-            <option value="embed">嵌入模式（默认）· 安卓画面嵌在 ApkStart 窗口里，观感统一</option>
-            <option value="detached">独立窗口 · 由模拟器自己开窗口，避开花屏/黑边/点不准</option>
-          </select>
-          <span class="sub">嵌入模式最像「一个应用一个窗口」，但需要把模拟器的窗口塞进我们自己的窗口，
-            容易在缩放、旋转、多窗口切换时出现黑边或点击错位。独立模式下方向、缩放、输入都由模拟器原生处理，
-            这类问题不会出现，代价是多一个任务栏图标。改动在下次打开应用时生效。</span>
-        </div>
-        <div class="field" id="portraitField">
-          <label>竖屏画面大小</label>
-          <select id="setPortrait">
-            <option value="720x1280">小 · 720 × 1280</option>
-            <option value="900x1600">中 · 900 × 1600</option>
-            <option value="1080x1920">大 · 1080 × 1920</option>
-            <option value="1440x2560">超大 · 1440 × 2560</option>
-          </select>
-          <span class="sub">窗口模式下可拖动边框任意缩放；这里调的是 Android 内部渲染尺寸，越小越省性能。</span>
-        </div>
-      </div>
-
-      <div class="group">
-        <div class="group-title">鼠标键位</div>
-        <div class="field">
-          <label>左键 · 确认 / 点击</label>
-          <span class="sub">模拟器原生把左键当成手指点击，按住拖动就是滑动，无需额外设置。</span>
-        </div>
-        <div class="field switch-field">
-          <div>
-            <label>右键 · 安卓返回</label>
-            <span class="sub">模拟器默认把右键也当成一次点击（容易误触）。开启后右键只执行返回，不再触发点击。</span>
-          </div>
-          <input type="checkbox" id="setMouseRightBack" class="switch" />
-        </div>
-        <div class="field">
-          <label>滚轮 · 滑动</label>
-          <select id="setMouseWheelMode">
-            <option value="smooth">平滑（推荐）· 合并多次滚动为一次流畅滑动</option>
-            <option value="native">原生 · 交给模拟器逐格处理</option>
-            <option value="off">关闭 · 不拦截滚轮</option>
-          </select>
-          <span class="sub">平滑模式把一小段时间内的滚动合并成一次滑动手势，避免逐格抽搐，也不会每格都拉起一个 adb 进程。</span>
-        </div>
-        <div class="field switch-field">
-          <div>
-            <label>鼠标侧键 · 返回 / 前进（默认关闭）</label>
-            <span class="sub">侧键映射需要全局鼠标钩子。钩子只在 ApkStart 应用窗口处于前台时安装，失焦或关闭立即卸载，不会拖慢桌面。</span>
-          </div>
-          <input type="checkbox" id="setMouseSideButtons" class="switch" />
-        </div>
-        <div class="field">
-          <span class="sub">以上映射只在应用窗口前台生效；切回桌面或关闭窗口后，鼠标行为完全恢复 Windows 原生。</span>
-        </div>
-      </div>
-
-      <div class="group">
-        <div class="group-title">键盘映射（游戏手柄）</div>
-        <div class="field switch-field">
-          <div>
-            <label>启用键盘映射</label>
-            <span class="sub">把键盘按键映射成安卓触屏点击/滑动。适合用键盘玩手游（WASD 移动、J/K 技能等）。
-              每个应用可以单独配置，右键应用卡片 → 「按键映射」选择预设模板或自定义。</span>
-          </div>
-          <input type="checkbox" id="setKeymapEnabled" class="switch" />
-        </div>
-        <div class="field">
-          <span class="sub" id="keymapHint">当前应用未配置按键映射。右键应用卡片可快速套用预设模板。</span>
-        </div>
-      </div>
-
-      <div class="group" id="perfGroup">
-        <div class="group-title">性能与资源占用</div>
-        <div class="field">
-          <label>资源策略</label>
-          <select id="setResourceMode">
-            <option value="save">省资源 · 2 核 / 让出前台 / 540p（老机器、挂机）</option>
-            <option value="balanced">均衡 · 一半物理核 / 让出前台 / 720p（推荐）</option>
-            <option value="smooth">流畅 · 不限核数 / 与前台同优先级（视频、游戏）</option>
-          </select>
-          <span class="sub">决定安卓虚拟机吃多少 CPU、画面多细腻。红果/抖音发卡就切「流畅」，只想挂着跑小应用就切「省资源」。改完下一次打开应用生效。</span>
-        </div>
-        <div class="field two">
-          <div>
-            <label>画质（安卓内部渲染分辨率）</label>
-            <select id="setRenderSize">
-              <option value="auto">自动（按加速状态）</option>
-              <option value="540x960">流畅 · 540 × 960</option>
-              <option value="720x1280">均衡 · 720 × 1280</option>
-              <option value="1080x1920">高清 · 1080 × 1920</option>
-            </select>
-          </div>
-          <div>
-            <label>安卓数据分区（应用与游戏装这里）</label>
-            <select id="setDataGB">
-              <option value="0">自动</option>
-              <option value="4">4 GB</option>
-              <option value="6">6 GB</option>
-              <option value="8">8 GB</option>
-              <option value="12">12 GB</option>
-              <option value="16">16 GB</option>
-              <option value="24">24 GB</option>
-            </select>
-          </div>
-        </div>
-        <div class="field">
-          <div class="row">
-            <button class="btn ghost sm" id="btnGrowData">立即扩容</button>
-            <span class="sub" style="flex:1;margin:0">扩容是就地做的：已装应用与存档都保留，只是下次打开应用会多花十几秒。</span>
-          </div>
-        </div>
-        <div class="field">
-          <span class="sub" id="dataNote">正在读取数据分区…</span>
-        </div>
-        <div class="field">
-          <label>系统语言</label>
-          <select id="setLocale">
-            <option value="tr-TR">Türkçe</option>
-            <option value="en-US">English</option>
-          </select>
-          <span class="sub" data-i18n-html>系统设置、权限弹窗、日期格式的语言。开机时注入到虚拟机，
-            <b>下次重启运行时生效</b>。中文输入法不受此项影响，单独在下面开关。</span>
-        </div>
-        <div class="field switch-field">
-          <div>
-            <label>中文输入法（推荐）</label>
-            <span class="sub">镜像只带英文键盘，勾上会静默安装并启用随包的谷歌拼音输入法，
-              这样在安卓应用里能直接打中文。关掉则保持系统原生输入法。</span>
-          </div>
-          <input type="checkbox" id="setChineseIme" class="switch" />
-        </div>
-        <div class="field switch-field">
-          <div>
-            <label>网络加速（推荐）</label>
-            <span class="sub">给安卓指定国内公共 DNS（阿里 / 腾讯）。安卓默认走主机的 DNS，主机挂着 VPN 或走公司网时解析会拖到几百毫秒，视频类应用首屏发慢。内网域名访问异常时可关掉。</span>
-          </div>
-          <input type="checkbox" id="setFastDns" class="switch" />
-        </div>
-        <div class="field switch-field">
-          <div>
-            <label>安卓声音</label>
-            <span class="sub">让应用提示音、视频声音正常播放。仅在你完全不需要声音、想再省一点 CPU 时关闭。</span>
-          </div>
-          <input type="checkbox" id="setAudio" class="switch" />
-        </div>
-        <div class="field switch-field">
-          <div>
-            <label>保留快速启动快照（推荐）</label>
-            <span class="sub" data-i18n-html>第二次打开应用只要几秒，代价是磁盘上多一份约 2–3 GB 的 <code>ram.bin</code>。磁盘紧张可以关掉：只影响启动速度，不影响应用与存档。</span>
-          </div>
-          <input type="checkbox" id="setKeepSnapshot" class="switch" />
-        </div>
-        <details class="mini-details">
-          <summary>容器细节（高级）</summary>
-          <div class="field switch-field">
-            <div>
-              <label>轻量容器</label>
-              <span class="sub">收敛 vCPU 配额并降低进程优先级，CPU 优先让给 Windows 桌面。上面的「资源策略」已经会自动设置这一项。</span>
-            </div>
-            <input type="checkbox" id="setLiteMode" class="switch" />
-          </div>
-          <div class="field">
-            <label>虚拟机优先级</label>
-            <select id="setPriorityMode">
-              <option value="balanced">均衡（推荐）· 运行时让着前台窗口</option>
-              <option value="performance">性能优先 · 运行时与前台同等优先级</option>
-              <option value="game">游戏 / 低延迟 · 运行时高优先级，适合 FPS、音游</option>
-            </select>
-            <span class="sub">游戏模式会让安卓虚拟机保持较高 CPU 优先级并减少宿主侧轮询，输入与画面延迟最低；代价是整机其他程序会变慢。没有应用窗口时容器仍会自动降优先级停放。</span>
-          </div>
-        </details>
-        <div class="field switch-field">
-          <div>
-            <label>深度裁剪系统后台</label>
-            <span class="sub">额外禁用 Play 商店、设置向导、打印服务等后台包，只留打开应用必需的环境。若遇到应用提示缺少 Google Play 服务，关掉此开关会自动恢复。</span>
-          </div>
-          <input type="checkbox" id="setDeepTrim" class="switch" />
-        </div>
-        <div class="field switch-field">
-          <div>
-            <label>开机预热（推荐）</label>
-            <span class="sub">启动 ApkStart 后就在后台把安卓环境引导好（窗口全程隐藏，不会看到模拟器）。之后点任何应用只剩一次「打开」，实测从 20 多秒降到几乎不用等。代价是空闲时常驻约 1GB 内存，关掉后第一次打开应用需要冷启动。</span>
-          </div>
-          <input type="checkbox" id="setPrewarm" class="switch" />
-        </div>
-        <div class="field">
-          <span class="sub">安卓环境只开机一次并常驻；之后打开应用不再重跑整个系统，只启动该应用并停掉其他应用进程。关掉最后一个窗口会清后台、停放容器，下次点开仍是秒进。</span>
-        </div>
-      </div>
-
-      <div class="group" id="downloadGroup">
-        <div class="group-title">下载与更新源</div>
-        <div class="field">
-          <label>更新与下载源</label>
-          <select id="setSourcePref">
-            <option value="auto">自动选择较快的源（推荐）</option>
-            <option value="gitee">只用 Gitee（国内通常最快）</option>
-            <option value="github">只用 GitHub</option>
-          </select>
-          <span class="sub">「自动」会同时问 GitHub 与 Gitee 的最新版本，把每个下载地址都真下 256KB 测一次速度，再从最快的那个地址下载；其中一个源不通不影响更新。</span>
-        </div>
-        <div class="field switch-field">
-          <div>
-            <label>自动尝试公共加速镜像</label>
-            <span class="sub">GitHub 直连太慢时，额外测速 ghfast.top / gh-proxy.com 这两个公开转发服务（只转发公开的发布文件，不涉及账号）。关掉后只用直连和你自己填的前缀。</span>
-          </div>
-          <input type="checkbox" id="setAutoMirror" class="switch" />
-        </div>
-        <div class="field">
-          <label>下载镜像前缀（可选，加速 GitHub）</label>
-          <input id="setMirrorPrefix" type="text" placeholder="例如 https://ghfast.top/" />
-          <span class="sub">填了就只用你填的前缀，不再尝试上面那两个公共镜像；留空则由「自动」逻辑决定。下载器会把它拼在真实地址前面。</span>
-        </div>
-        <div class="field">
-          <label>下载线程数（1–16，默认 8）</label>
-          <input id="setConnections" type="number" min="1" max="16" step="1" />
-          <span class="sub">大文件按块并行下载。默认 8 线程已经能跑满大多数家宽；网络稳定时可以试 16。</span>
-        </div>
-        <details class="mini-details">
-          <summary>Gitee 更新源（可选）</summary>
-          <div class="field">
-            <label>Gitee 只读 token（一般不用填）</label>
-            <input id="setGiteeToken" type="password" placeholder="留空即可：公开仓库匿名也能读" />
-            <span class="sub">本项目仓库已公开，Gitee 的发行版列表匿名就能读，留空也能用 Gitee 源。
-              只有在「Gitee 被限流（返回 403/429）」或你想读私有分支时才需要填：
-              gitee.com → 设置 → 私人令牌，只勾「projects」即可，它只用于读取发行版列表，
-              不会上传任何东西。</span>
-          </div>
-        </details>
-      </div>
-
-      <details class="advanced-group">
-        <summary>高级参数（一般无需修改）</summary>
-      <div class="group">
-        <div class="group-title">运行时</div>
-        <div class="field">
-          <label>引擎模式</label>
-          <select id="setEngineMode">
-            <option value="builtin">自带运行时（推荐，QEMU + Android-x86，无第三方依赖）</option>
-            <option value="mumu">MuMu 模拟器 12（复用本机已装的网易模拟器）</option>
-            <option value="fydeos">FydeOS 安卓子系统（FydeOS 装在本机，或跑在 VMware / VirtualBox 里）</option>
-            <option value="attach">连接已有运行时（高级：复用 WSA / 其他模拟器的 adb 端口）</option>
-          </select>
-          <span class="sub">「自带运行时」会自己下载安卓镜像；选第三方模拟器时不下载任何东西，
-            直接驱动你电脑上已经装好的那台，装的应用和它自己的应用共用一套环境。
-            FydeOS 底座驱动 FydeOS 自带的安卓环境（需要先在它的安卓设置里打开「ADB 调试」）；
-            FydeOS 跑在虚拟机里时，要在下面填那台虚拟机的地址。它不嵌窗口，画面由 FydeOS 自己显示。</span>
-        </div>
-        <div class="field" id="fydeosHostField" hidden>
-          <label>FydeOS 安卓子系统地址</label>
-          <input id="setFydeosHost" type="text" placeholder="127.0.0.1:5555，或虚拟机的局域网 IP:5555" />
-          <span class="sub" data-i18n-html>FydeOS 跑在 VMware / VirtualBox 里时必填。最省事的配法：给虚拟机做端口转发
-            （宿主 5555 → guest 5555），然后填 <b>127.0.0.1:5555</b>。
-            直接装在本机的 FydeOS 可以留空（自动探测 arc:5555 等）。</span>
-        </div>
-        <div class="field" id="mumuPathField" hidden>
-          <label>MuMu 安装目录（留空自动查找）</label>
-          <input id="setMumuPath" type="text" placeholder="例如 D:\MuMu Player 12" />
-          <span class="sub">默认会按注册表和常见路径自动找 MuMuManager.exe；装在非常规盘符时在这里指定。</span>
-        </div>
-        <div class="field">
-          <label>adb 路径</label>
-          <input id="setAdbPath" type="text" placeholder="留空则自动在 PATH / Android SDK 中查找" />
-        </div>
-        <div class="field">
-          <label>设备地址</label>
-          <div class="row">
-            <input id="setDevice" type="text" placeholder="127.0.0.1:58526" />
-            <button class="btn ghost sm" id="btnProbe">探测</button>
-          </div>
-        </div>
-        <div class="field">
-          <label>系统镜像（ISO）</label>
-          <input id="setSystemImage" type="text" placeholder="Android-x86 / Bliss OS 的 ISO 或 IMG 路径，留空使用默认位置" />
-        </div>
-        <div class="field two">
-          <div>
-            <label>内存 (MB，0 = 自动)</label>
-            <input id="setMemory" type="number" min="0" step="512" />
-          </div>
-          <div>
-            <label>CPU 核心（0 = 自动）</label>
-            <input id="setCores" type="number" min="0" max="16" />
-          </div>
-        </div>
-        <div class="field">
-          <label>空闲回收（分钟，0 = 不回收）</label>
-          <input id="setIdle" type="number" min="0" step="1" />
-        </div>
-        <div class="field switch-field">
-          <div>
-            <label>通用兼容镜像（自动管理）</label>
-            <span class="sub">现在只有一个 Android 14 通用镜像，x86 与 ARM 应用都能跑，首次遇到 ARM 应用时会自动下载，不需要手动切换。此开关仅用于旧配置兼容。</span>
-          </div>
-          <input type="checkbox" id="setCompat" class="switch" />
-        </div>
-        <div class="field" id="compatInstallField" hidden>
-          <label>兼容镜像</label>
-          <div class="row">
-            <span class="inline-note" id="compatImgStatus">未下载</span>
-            <button class="btn ghost sm" id="btnInstallPlay">下载兼容镜像</button>
-          </div>
-        </div>
-        <div class="runtime-actions">
-          <button class="btn ghost sm" id="btnRuntimeStart">启动运行时</button>
-          <button class="btn ghost sm" id="btnRuntimeStop">停止内置虚拟机</button>
-          <span class="inline-note" id="probeResult"></span>
-        </div>
-      </div>
-      </details>
-
-      <div class="group">
-        <div class="group-title">安卓系统设置（不用进安卓桌面）</div>
-        <div class="field">
-          <label>运行状态</label>
-          <div class="row">
-            <span class="inline-note" id="androidStatus">运行时未启动</span>
-            <button class="btn ghost sm" id="btnAndroidRefresh">刷新</button>
-            <button class="btn ghost sm" id="btnAndroidTune">一键流畅优化</button>
-          </div>
-          <span class="sub">关闭系统动画、放开后台进程上限并把当前应用加入电池白名单，低配电脑体感最明显。</span>
-        </div>
-        <div class="field switch-field">
-          <div>
-            <label>Wi-Fi</label>
-            <span class="sub">安卓虚拟机内部的无线网，关掉可省一点 CPU。</span>
-          </div>
-          <input type="checkbox" id="setAndroidWifi" class="switch" />
-        </div>
-        <div class="field switch-field">
-          <div>
-            <label>飞行模式</label>
-            <span class="sub">彻底断网（含移动数据），需要安静时打开。</span>
-          </div>
-          <input type="checkbox" id="setAndroidAirplane" class="switch" />
-        </div>
-        <div class="field switch-field">
-          <div>
-            <label>系统动画</label>
-            <span class="sub">关掉后界面切换明显更快，功能不受影响。</span>
-          </div>
-          <input type="checkbox" id="setAndroidAnim" class="switch" />
-        </div>
-        <div class="field">
-          <label>媒体音量</label>
-          <div class="row">
-            <input type="range" id="setAndroidVolume" min="0" max="100" step="1" style="flex:1" />
-            <span class="inline-note" id="androidVolumeText">—</span>
-          </div>
-        </div>
-        <div class="field two">
-          <div>
-            <label>字体大小</label>
-            <select id="setAndroidFont">
-              <option value="0.85">小</option>
-              <option value="1.00">标准</option>
-              <option value="1.15">大</option>
-              <option value="1.30">特大</option>
-            </select>
-          </div>
-          <div>
-            <label>显示大小</label>
-            <select id="setAndroidDensity">
-              <option value="240">紧凑（省性能）</option>
-              <option value="320">标准</option>
-              <option value="420">宽松</option>
-              <option value="480">特大</option>
-            </select>
-          </div>
-        </div>
-        <div class="runtime-actions">
-          <button class="btn ghost sm" id="btnAndroidSettings">安卓原生设置</button>
-          <button class="btn ghost sm" id="btnAndroidDisplay">显示设置</button>
-          <button class="btn ghost sm" id="btnAndroidSound">声音设置</button>
-          <button class="btn ghost sm" id="btnAndroidLocale">语言设置</button>
-          <button class="btn ghost sm" id="btnAndroidApps">应用管理</button>
-        </div>
-      </div>
-
-      <div class="group">
-        <div class="group-title">桌面与应用</div>
-        <div class="field switch-field">
-          <div>
-            <label>安装后自动创建桌面快捷方式</label>
-            <span class="sub">快捷方式带真实应用图标，双击直接进应用</span>
-          </div>
-          <input type="checkbox" id="setAutoShortcut" class="switch" />
-        </div>
-        <div class="field switch-field">
-          <div>
-            <label>同时添加到开始菜单</label>
-            <span class="sub">Windows 搜索能搜到应用名，任务栏也按应用分组</span>
-          </div>
-          <input type="checkbox" id="setStartMenuShortcut" class="switch" />
-        </div>
-        <div class="field">
-          <label>快捷方式目录</label>
-          <input id="setShortcutDir" type="text" placeholder="留空 = 桌面" />
-        </div>
-        <div class="runtime-actions">
-          <button class="btn ghost sm" id="btnRebuildShortcuts">重建快捷方式</button>
-          <span class="inline-note">桌面图标被误删或被安全软件拦掉时，点这里按当前设置全部补齐。</span>
-        </div>
-      </div>
-
-      <div class="group">
-        <div class="group-title">文件互通</div>
-        <div class="field">
-          <label>本机共享目录</label>
-          <div class="row">
-            <input id="setSharedDir" type="text" />
-            <button class="btn ghost sm" id="btnBrowseShared">浏览</button>
-            <button class="btn ghost sm" id="btnOpenShared">打开</button>
-            <button class="btn ghost sm" id="btnSyncShared">立即同步</button>
-            <button class="btn primary sm" id="btnSaveShared">保存并迁移</button>
-          </div>
-          <span class="sub">修改后旧目录里已有的文件会自动搬到新目录；正在运行的文件互通不受影响。</span>
-        </div>
-        <div class="field">
-          <label>安卓内对应目录</label>
-          <input id="setDeviceSharedDir" type="text" placeholder="/sdcard/ApkStartShared" />
-        </div>
-        <p class="note">两侧目录会持续双向同步；在安卓应用里保存到该目录的文件，会出现在本机共享目录中。</p>
-      </div>
-
-      <div class="group">
-        <div class="group-title">系统集成</div>
-        <div class="field switch-field">
-          <div>
-            <label>关联 .apk 文件</label>
-            <span class="sub">双击 APK 直接安装到 ApkStart（仅写入当前用户，无需管理员）</span>
-          </div>
-          <button class="btn ghost sm" id="btnAssoc">检查中…</button>
-        </div>
-        <div class="field">
-          <label>运行时数据目录（系统镜像 · 已装应用 · 快照）</label>
-          <div class="row">
-            <input id="setRuntimeDir" type="text" readonly placeholder="默认：C 盘用户数据目录" />
-            <button class="btn ghost sm" id="btnBrowseRuntimeDir">浏览</button>
-            <button class="btn ghost sm" id="btnOpenData">打开</button>
-          </div>
-          <span class="sub">这里占用空间最大（数 GB）。改到非系统盘可大幅减轻 C 盘压力；修改后需重启软件，已存在的数据不会自动搬移（请手动复制后删除旧目录）。</span>
-        </div>
-        <div class="field">
-          <label>安卓数据目录（应用、游戏与快速启动快照）</label>
-          <div class="row">
-            <input id="setAvdDir" type="text" readonly placeholder="默认：运行时目录下的 avd 文件夹" />
-            <button class="btn ghost sm" id="btnBrowseAvdDir">浏览</button>
-            <button class="btn ghost sm" id="btnOpenAvdDir">打开</button>
-          </div>
-          <span class="sub" data-i18n-html>真正吃盘的是这一块：数据分区（默认 6 GB，可在上面对大）+ 快速启动快照（约 2–3 GB）。
-            磁盘紧张时把它指到另一个盘（如 D:），重启软件后生效；旧目录里的 <code>apkstart.avd</code> 可整体搬过去再删。</span>
-        </div>
-        <div class="field">
-          <label>卸载 ApkStart</label>
-          <div class="row">
-            <button class="btn ghost sm" id="btnUninstall">一键卸载</button>
-            <span class="inline-note">卸载会取消 .apk 关联并移除程序；便携版请按提示手动删除目录。</span>
-          </div>
-        </div>
-      </div>
-      <div class="group" id="updateGroup">
-        <div class="group-title">软件更新</div>
-        <div class="field">
-          <label>当前版本 <span class="inline-note" id="updateCurrent">—</span></label>
-          <div class="row">
-            <span class="inline-note" id="updateState">尚未检查</span>
-            <span style="flex:1"></span>
-            <button class="btn ghost sm" id="btnCheckUpdate">检查更新</button>
-            <button class="btn primary sm" id="btnDoUpdate" style="display:none" hidden>立即更新</button>
-          </div>
-          <div class="update-bar" id="updateBar" hidden><i id="updateBarFill"></i></div>
-          <span class="sub" id="updateNote">
-            从 GitHub（RoutineMiku/apkstart）获取最新版本；轻量版会下载便携包并自动替换程序文件，
-            运行时、已装应用与快照都不受影响。
-          </span>
-        </div>
-      </div>
-
-      <div class="group" id="aboutGroup">
-        <div class="group-title">Hakkında & Destek</div>
-        <div class="about-box">
-          <div class="about-brand">
-            <img class="about-logo" src="assets/logo.png" alt="ApkStart Logo" draggable="false" />
-          </div>
-          <div class="about-info">
-            <div class="about-name">ApkStart <span class="about-ver" id="aboutVer"></span></div>
-            <p class="note">Windows için modern Android APK başlatıcısı: Çift tıkla yükle, masaüstü kısayolu, bağımsız pencere ve çift yönlü dosya paylaşımı.</p>
-            <div class="about-links">
-              <div class="user-support">
-                <b>Fork & Destek:</b>
-                <a href="https://github.com/Wiojelt/apkstart" target="_blank" rel="noopener">GitHub · Wiojelt/apkstart</a>
-                <a href="https://github.com/Wiojelt/apkstart/issues" target="_blank" rel="noopener">Sorun Bildir / Destek Talebi (Issues)</a>
+      <main class="settings-content">
+        <!-- 1. 外观与语言 -->
+        <section class="settings-pane" id="paneAppearance">
+          <div class="settings-card" id="appearanceGroup">
+            <div class="settings-card-title">Görünüm ve Dil</div>
+            <div class="field two">
+              <div>
+                <label for="setTheme">Tema / Theme</label>
+                <select id="setTheme">
+                  <option value="dark">Karanlık (Varsayılan)</option>
+                  <option value="nord">Gece Mavisi (Nord)</option>
+                  <option value="light">Aydınlık</option>
+                  <option value="system">Sistem Teması</option>
+                </select>
               </div>
-              <div class="upstream-support" style="margin-top: 8px; font-size: 11px; opacity: 0.85;">
-                <span>Orijinal Proje: </span>
-                <a href="https://github.com/RoutineMiku/apkstart" target="_blank" rel="noopener">RoutineMiku/apkstart</a>
-                <span class="powered" style="margin-left: 8px;">Powered by <b>RoutineMiku</b> & <b>Wiojelt</b></span>
-                <a href="https://v.douyin.com/9TIIxVCANig/" target="_blank" rel="noopener" style="display:none">抖音 · @日常MIKU（联系作者）</a>
+              <div>
+                <label for="setLanguage">Dil / Language</label>
+                <select id="setLanguage"></select>
+              </div>
+            </div>
+            <span class="sub">Tema ve dil seçiminiz tüm pencerelerde anında uygulanır.</span>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-title">系统集成</div>
+            <div class="field switch-field">
+              <div>
+                <label>开机自动启动（默认开启）</label>
+                <span class="sub">随 Windows 登录常驻托盘，双击桌面图标秒开应用，无需手动启动。</span>
+              </div>
+              <input type="checkbox" id="setAutoStart" class="switch" />
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. 运行时与环境 -->
+        <section class="settings-pane" id="paneRuntime" hidden>
+          <div class="settings-card" id="runtimeGroup">
+            <div class="settings-card-title">运行状态</div>
+            <div class="field">
+              <div class="row" style="align-items:center;">
+                <span class="inline-note" id="setupStateText">正在检查…</span>
+                <span style="flex:1"></span>
+                <button class="btn primary sm" id="btnDeployAll">一键完成</button>
+                <button class="btn ghost sm" id="btnSetupAdvanced">高级：连接已有运行时</button>
+              </div>
+              <span class="sub" id="setupNote">全自动：无需选择镜像、无需启用加速、无需调内存</span>
+            </div>
+            <div class="field">
+              <div class="steps" id="setupSteps"></div>
+            </div>
+            <div id="envCheck" class="env-check" hidden></div>
+
+            <div class="setup-guide" id="setupGuide" hidden>
+              <h2>安装 Android 到虚拟磁盘</h2>
+              <p class="guide-sub">虚拟机窗口已打开。按下面 6 步操作一次，之后 ApkStart 会直接从磁盘启动，不再需要镜像。</p>
+              <ol class="guide-list">
+                <li data-i18n-html><b>启动菜单</b>：用 <kbd>↓</kbd> 选到 <code>Installation - Install Android-x86 to harddisk</code>，回车</li>
+                <li data-i18n-html><b>Choose Partition</b>：选 <code>Create/Modify partitions</code>；询问是否使用 GPT 时选 <code>No</code></li>
+                <li data-i18n-html><b>cfdisk 分区</b>：<code>New</code> → <code>Primary</code> → 容量直接回车 → <code>Bootable</code> → <code>Write</code> → 输入 <code>yes</code> → <code>Quit</code></li>
+                <li data-i18n-html><b>格式化</b>：选 <code>vda1</code> → 提示格式化时选 <code>ext4</code> → <code>Yes</code></li>
+                <li data-i18n-html><b>引导与系统</b>：<code>Install GRUB</code> 选 <code>Yes</code>；<code>Install /system as read-write</code> 选 <code>Yes</code></li>
+                <li data-i18n-html><b>完成</b>：进度到 100% 后点下面的「我已安装完成」（ApkStart 会自动重启并接管）</li>
+              </ol>
+              <div class="guide-foot">
+                <button class="btn primary" id="btnMarkInstalled">我已安装完成</button>
+                <button class="btn ghost" id="btnGuideClose">稍后再说</button>
+              </div>
+            </div>
+
+            <div class="field" style="margin-top: 12px;">
+              <label>本机自适应参数</label>
+              <div class="inline-note" id="autoProfileText">正在检测…</div>
+            </div>
+          </div>
+
+          <div class="settings-card" id="perfGroup">
+            <div class="settings-card-title">性能与资源策略</div>
+            <div class="field">
+              <label>资源策略</label>
+              <select id="setResourceMode">
+                <option value="save">省资源 · 2 核 / 让出前台 / 540p（老机器、挂机）</option>
+                <option value="balanced">均衡 · 一半物理核 / 让出前台 / 720p（推荐）</option>
+                <option value="smooth">流畅 · 不限核数 / 与前台同优先级（视频、游戏）</option>
+              </select>
+            </div>
+            <div class="field two">
+              <div>
+                <label>画质（安卓内部渲染分辨率）</label>
+                <select id="setRenderSize">
+                  <option value="auto">自动（按加速状态）</option>
+                  <option value="540x960">流畅 · 540 × 960</option>
+                  <option value="720x1280">均衡 · 720 × 1280</option>
+                  <option value="1080x1920">高清 · 1080 × 1920</option>
+                </select>
+              </div>
+              <div>
+                <label>虚拟机优先级</label>
+                <select id="setPriorityMode">
+                  <option value="balanced">均衡（推荐）· 运行时让着前台窗口</option>
+                  <option value="performance">性能优先 · 运行时与前台同等优先级</option>
+                  <option value="game">游戏 / 低延迟 · 运行时高优先级，适合 FPS、音游</option>
+                </select>
+              </div>
+            </div>
+            <div class="field switch-field">
+              <div>
+                <label>轻量容器</label>
+                <span class="sub">收敛 vCPU 配额并降低进程优先级，CPU 优先让给 Windows 桌面。</span>
+              </div>
+              <input type="checkbox" id="setLiteMode" class="switch" />
+            </div>
+            <div class="field switch-field">
+              <div>
+                <label>深度裁剪系统后台</label>
+                <span class="sub">禁用非必需后台服务，只保留应用运行环境。</span>
+              </div>
+              <input type="checkbox" id="setDeepTrim" class="switch" />
+            </div>
+            <div class="field switch-field">
+              <div>
+                <label>开机预热（推荐）</label>
+                <span class="sub">启动 ApkStart 后后台引导安卓环境，点开应用即可秒进。</span>
+              </div>
+              <input type="checkbox" id="setPrewarm" class="switch" />
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-title">系统选项</div>
+            <div class="field">
+              <label>系统语言</label>
+              <select id="setLocale">
+                <option value="tr-TR">Türkçe</option>
+                <option value="en-US">English</option>
+              </select>
+            </div>
+            <div class="field switch-field">
+              <div>
+                <label>中文输入法（推荐）</label>
+                <span class="sub">自带输入法支持。</span>
+              </div>
+              <input type="checkbox" id="setChineseIme" class="switch" />
+            </div>
+            <div class="field switch-field">
+              <div>
+                <label>网络加速（推荐）</label>
+                <span class="sub">为安卓系统配置快速公共 DNS 解析。</span>
+              </div>
+              <input type="checkbox" id="setFastDns" class="switch" />
+            </div>
+            <div class="field switch-field">
+              <div>
+                <label>安卓声音</label>
+                <span class="sub">让应用提示音与媒体音频正常播放。</span>
+              </div>
+              <input type="checkbox" id="setAudio" class="switch" />
+            </div>
+            <div class="field switch-field">
+              <div>
+                <label>保留快速启动快照（推荐）</label>
+                <span class="sub" data-i18n-html>第二次打开应用只要几秒，占用约 2–3 GB 磁盘空间。</span>
+              </div>
+              <input type="checkbox" id="setKeepSnapshot" class="switch" />
+            </div>
+          </div>
+
+          <details class="settings-card">
+            <summary style="font-weight:650;color:var(--brand);cursor:pointer;">高级引擎参数（一般无需修改）</summary>
+            <div style="margin-top:14px;display:flex;flex-direction:column;gap:12px;">
+              <div class="field">
+                <label>引擎模式</label>
+                <select id="setEngineMode">
+                  <option value="builtin">自带运行时（推荐，QEMU + Android-x86，无第三方依赖）</option>
+                  <option value="mumu">MuMu 模拟器 12（复用本机已装的网易模拟器）</option>
+                  <option value="fydeos">FydeOS 安卓子系统（FydeOS 装在本机，或跑在 VMware / VirtualBox 里）</option>
+                  <option value="attach">连接已有运行时（高级：复用 WSA / 其他模拟器的 adb 端口）</option>
+                </select>
+              </div>
+              <div class="field" id="fydeosHostField" hidden>
+                <label>FydeOS 安卓子系统地址</label>
+                <input id="setFydeosHost" type="text" placeholder="127.0.0.1:5555" />
+              </div>
+              <div class="field" id="mumuPathField" hidden>
+                <label>MuMu 安装目录（留空自动查找）</label>
+                <input id="setMumuPath" type="text" placeholder="例如 D:\MuMu Player 12" />
+              </div>
+              <div class="field">
+                <label>adb 路径</label>
+                <input id="setAdbPath" type="text" placeholder="留空则自动在 PATH / Android SDK 中查找" />
+              </div>
+              <div class="field">
+                <label>设备地址</label>
+                <div class="row">
+                  <input id="setDevice" type="text" placeholder="127.0.0.1:58526" />
+                  <button class="btn ghost sm" id="btnProbe">探测</button>
+                </div>
+              </div>
+              <div class="field">
+                <label>系统镜像（ISO）</label>
+                <input id="setSystemImage" type="text" placeholder="留空使用默认位置" />
+              </div>
+              <div class="field two">
+                <div>
+                  <label>内存 (MB，0 = 自动)</label>
+                  <input id="setMemory" type="number" min="0" step="512" />
+                </div>
+                <div>
+                  <label>CPU 核心（0 = 自动）</label>
+                  <input id="setCores" type="number" min="0" max="16" />
+                </div>
+              </div>
+              <div class="field">
+                <label>空闲回收（分钟，0 = 不回收）</label>
+                <input id="setIdle" type="number" min="0" step="1" />
+              </div>
+              <div class="field switch-field">
+                <div>
+                  <label>通用兼容镜像（自动管理）</label>
+                </div>
+                <input type="checkbox" id="setCompat" class="switch" />
+              </div>
+              <div class="field" id="compatInstallField" hidden>
+                <label>兼容镜像</label>
+                <div class="row">
+                  <span class="inline-note" id="compatImgStatus">未下载</span>
+                  <button class="btn ghost sm" id="btnInstallPlay">下载兼容镜像</button>
+                </div>
+              </div>
+              <div class="runtime-actions">
+                <button class="btn ghost sm" id="btnRuntimeStart">启动运行时</button>
+                <button class="btn ghost sm" id="btnRuntimeStop">停止内置虚拟机</button>
+                <span class="inline-note" id="probeResult"></span>
+              </div>
+            </div>
+          </details>
+        </section>
+
+        <!-- 3. 应用窗口 -->
+        <section class="settings-pane" id="paneDisplay" hidden>
+          <div class="settings-card">
+            <div class="settings-card-title">显示与方向</div>
+            <div class="field">
+              <label>显示模式</label>
+              <select id="setDisplayMode">
+                <option value="window">竖屏窗口（可自由拉伸，记住每个应用的大小）</option>
+                <option value="fullscreen">全屏（铺满屏幕，保持手机比例两侧留黑）</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>自动全屏</label>
+              <select id="setAutoFullscreen">
+                <option value="off">关闭（按上面选的显示模式走）</option>
+                <option value="on">打开 · 每次启动应用都自动全屏</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>屏幕方向</label>
+              <select id="setOrientationMode">
+                <option value="auto">跟随应用（推荐 · 自动选横竖屏，画面铺满不留黑边）</option>
+                <option value="portrait">强制竖屏（手机比例，适合刷短视频、看小说）</option>
+                <option value="landscape">强制横屏（宽屏铺满，适合看剧、玩游戏）</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>平板排版</label>
+              <select id="setTabletMode">
+                <option value="on">打开（推荐 · 逻辑密度 190dpi，sw606dp 走平板排版）</option>
+                <option value="off">关闭（镜像默认密度，手机排版）</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>当前面板方向</label>
+              <select id="setLandscape">
+                <option value="portrait">竖屏面板</option>
+                <option value="landscape">横屏面板</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>窗口承载方式</label>
+              <select id="setWindowEmbed">
+                <option value="embed">嵌入模式（默认）· 安卓画面嵌在 ApkStart 窗口里，观感统一</option>
+                <option value="detached">独立窗口 · 由模拟器自己开窗口，避开花屏/黑边/点不准</option>
+              </select>
+            </div>
+            <div class="field" id="portraitField">
+              <label>竖屏画面大小</label>
+              <select id="setPortrait">
+                <option value="720x1280">小 · 720 × 1280</option>
+                <option value="900x1600">中 · 900 × 1600</option>
+                <option value="1080x1920">大 · 1080 × 1920</option>
+                <option value="1440x2560">超大 · 1440 × 2560</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-title">鼠标与按键映射</div>
+            <div class="field switch-field">
+              <div>
+                <label>右键 · 安卓返回</label>
+                <span class="sub">开启后右键只执行返回，不再触发点击。</span>
+              </div>
+              <input type="checkbox" id="setMouseRightBack" class="switch" />
+            </div>
+            <div class="field">
+              <label>滚轮 · 滑动</label>
+              <select id="setMouseWheelMode">
+                <option value="smooth">平滑（推荐）· 合并多次滚动为一次流畅滑动</option>
+                <option value="native">原生 · 交给模拟器逐格处理</option>
+                <option value="off">关闭 · 不拦截滚轮</option>
+              </select>
+            </div>
+            <div class="field switch-field">
+              <div>
+                <label>鼠标侧键 · 返回 / 前进（默认关闭）</label>
+                <span class="sub">仅在前台窗口生效，不影响桌面操作。</span>
+              </div>
+              <input type="checkbox" id="setMouseSideButtons" class="switch" />
+            </div>
+            <div class="field switch-field">
+              <div>
+                <label>启用键盘映射</label>
+                <span class="sub">把按键映射成安卓触屏点击/滑动。</span>
+              </div>
+              <input type="checkbox" id="setKeymapEnabled" class="switch" />
+            </div>
+            <div class="field">
+              <span class="sub" id="keymapHint">当前应用未配置按键映射。右键应用卡片可快速套用预设模板。</span>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-title">安卓系统快捷控制</div>
+            <div class="field">
+              <label>运行状态</label>
+              <div class="row">
+                <span class="inline-note" id="androidStatus">运行时未启动</span>
+                <button class="btn ghost sm" id="btnAndroidRefresh">刷新</button>
+                <button class="btn ghost sm" id="btnAndroidTune">一键流畅优化</button>
+              </div>
+            </div>
+            <div class="field switch-field">
+              <div>
+                <label>Wi-Fi</label>
+              </div>
+              <input type="checkbox" id="setAndroidWifi" class="switch" />
+            </div>
+            <div class="field switch-field">
+              <div>
+                <label>飞行模式</label>
+              </div>
+              <input type="checkbox" id="setAndroidAirplane" class="switch" />
+            </div>
+            <div class="field switch-field">
+              <div>
+                <label>系统动画</label>
+              </div>
+              <input type="checkbox" id="setAndroidAnim" class="switch" />
+            </div>
+            <div class="field">
+              <label>媒体音量</label>
+              <div class="row">
+                <input type="range" id="setAndroidVolume" min="0" max="100" step="1" style="flex:1" />
+                <span class="inline-note" id="androidVolumeText">—</span>
+              </div>
+            </div>
+            <div class="field two">
+              <div>
+                <label>字体大小</label>
+                <select id="setAndroidFont">
+                  <option value="0.85">小</option>
+                  <option value="1.00">标准</option>
+                  <option value="1.15">大</option>
+                  <option value="1.30">特大</option>
+                </select>
+              </div>
+              <div>
+                <label>显示大小</label>
+                <select id="setAndroidDensity">
+                  <option value="240">紧凑（省性能）</option>
+                  <option value="320">标准</option>
+                  <option value="420">宽松</option>
+                  <option value="480">特大</option>
+                </select>
+              </div>
+            </div>
+            <div class="runtime-actions">
+              <button class="btn ghost sm" id="btnAndroidSettings">安卓原生设置</button>
+              <button class="btn ghost sm" id="btnAndroidDisplay">显示设置</button>
+              <button class="btn ghost sm" id="btnAndroidSound">声音设置</button>
+              <button class="btn ghost sm" id="btnAndroidLocale">语言设置</button>
+              <button class="btn ghost sm" id="btnAndroidApps">应用管理</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. 存储与维护 -->
+        <section class="settings-pane" id="paneStorage" hidden>
+          <div class="settings-card">
+            <div class="settings-card-title">磁盘总占用（运行时 + 安卓数据 + 缓存）</div>
+            <div class="field">
+              <div class="row">
+                <span class="inline-note" id="usageText">正在统计…</span>
+                <button class="btn ghost sm" id="btnCleanup">清理可回收文件</button>
+                <button class="btn ghost sm" id="btnLeftovers" title="清理残留">清理旧版本残留</button>
+                <button class="btn ghost sm" id="btnRepairNetwork">修复网络</button>
+                <button class="btn ghost sm danger" id="btnResetData">重置安卓数据</button>
+              </div>
+              <label class="checkbox-inline" style="margin-top:8px;">
+                <input type="checkbox" id="chkCleanSnapshots" />
+                <span>连当前 AVD 的快速启动快照也一起清（会先停运行时，能真正回收几 GB 快照）</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-title">安卓数据分区（应用与游戏装这里）</div>
+            <div class="field">
+              <div class="row">
+                <select id="setDataGB" style="flex:1;">
+                  <option value="0">自动</option>
+                  <option value="4">4 GB</option>
+                  <option value="6">6 GB</option>
+                  <option value="8">8 GB</option>
+                  <option value="12">12 GB</option>
+                  <option value="16">16 GB</option>
+                  <option value="24">24 GB</option>
+                </select>
+                <button class="btn ghost sm" id="btnGrowData">立即扩容</button>
+              </div>
+              <span class="sub" id="dataNote">正在读取数据分区…</span>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-title">桌面与快捷方式</div>
+            <div class="field switch-field">
+              <div>
+                <label>安装后自动创建桌面快捷方式</label>
+              </div>
+              <input type="checkbox" id="setAutoShortcut" class="switch" />
+            </div>
+            <div class="field switch-field">
+              <div>
+                <label>同时添加到开始菜单</label>
+              </div>
+              <input type="checkbox" id="setStartMenuShortcut" class="switch" />
+            </div>
+            <div class="field">
+              <label>快捷方式目录</label>
+              <input id="setShortcutDir" type="text" placeholder="留空 = 桌面" />
+            </div>
+            <div class="runtime-actions">
+              <button class="btn ghost sm" id="btnRebuildShortcuts">重建快捷方式</button>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-title">文件互通</div>
+            <div class="field">
+              <label>本机共享目录</label>
+              <div class="row">
+                <input id="setSharedDir" type="text" />
+                <button class="btn ghost sm" id="btnBrowseShared">浏览</button>
+                <button class="btn ghost sm" id="btnOpenShared">打开</button>
+                <button class="btn ghost sm" id="btnSyncShared">立即同步</button>
+                <button class="btn primary sm" id="btnSaveShared">保存并迁移</button>
+              </div>
+            </div>
+            <div class="field">
+              <label>安卓内对应目录</label>
+              <input id="setDeviceSharedDir" type="text" placeholder="/sdcard/ApkStartShared" />
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-title">系统集成与目录</div>
+            <div class="field switch-field">
+              <div>
+                <label>关联 .apk 文件</label>
+                <span class="sub">双击 APK 直接安装到 ApkStart</span>
+              </div>
+              <button class="btn ghost sm" id="btnAssoc">检查中…</button>
+            </div>
+            <div class="field">
+              <label>运行时数据目录（系统镜像 · 已装应用 · 快照）</label>
+              <div class="row">
+                <input id="setRuntimeDir" type="text" readonly placeholder="默认：C 盘用户数据目录" />
+                <button class="btn ghost sm" id="btnBrowseRuntimeDir">浏览</button>
+                <button class="btn ghost sm" id="btnOpenData">打开</button>
+              </div>
+            </div>
+            <div class="field">
+              <label>安卓数据目录（应用、游戏与快速启动快照）</label>
+              <div class="row">
+                <input id="setAvdDir" type="text" readonly placeholder="默认：运行时目录下的 avd 文件夹" />
+                <button class="btn ghost sm" id="btnBrowseAvdDir">浏览</button>
+                <button class="btn ghost sm" id="btnOpenAvdDir">打开</button>
+              </div>
+            </div>
+            <div class="field">
+              <div class="row">
+                <button class="btn ghost sm" id="btnDiagnostics">导出诊断报告</button>
+                <button class="btn ghost sm danger" id="btnUninstall">一键卸载</button>
               </div>
             </div>
           </div>
-          <div class="about-qrs" style="display:none">
-            <div class="about-qr">
-              <img src="assets/wechat-qr.jpg" alt="WeChat" width="1" height="1" />
+
+          <div class="settings-card" id="updateGroup">
+            <div class="settings-card-title">软件更新</div>
+            <div class="field">
+              <label>当前版本 <span class="inline-note" id="updateCurrent">—</span></label>
+              <div class="row">
+                <span class="inline-note" id="updateState">尚未检查</span>
+                <span style="flex:1"></span>
+                <button class="btn ghost sm" id="btnCheckUpdate">检查更新</button>
+                <button class="btn primary sm" id="btnDoUpdate" style="display:none" hidden>立即更新</button>
+              </div>
+              <div class="update-bar" id="updateBar" hidden><i id="updateBarFill"></i></div>
+              <span class="sub" id="updateNote">获取最新版本并自动平滑更新。</span>
             </div>
-            <div class="about-qr">
-              <img src="assets/douyin-qr.jpg" alt="Douyin" width="1" height="1" />
+            <div class="field">
+              <label>更新与下载源</label>
+              <select id="setSourcePref">
+                <option value="auto">自动选择较快的源（推荐）</option>
+                <option value="gitee">只用 Gitee（国内通常最快）</option>
+                <option value="github">只用 GitHub</option>
+              </select>
+            </div>
+            <div class="field switch-field">
+              <div>
+                <label>自动尝试公共加速镜像</label>
+              </div>
+              <input type="checkbox" id="setAutoMirror" class="switch" />
+            </div>
+            <div class="field">
+              <label>下载镜像前缀（可选，加速 GitHub）</label>
+              <input id="setMirrorPrefix" type="text" placeholder="例如 https://ghfast.top/" />
+            </div>
+            <div class="field">
+              <label>下载线程数（1–16，默认 8）</label>
+              <input id="setConnections" type="number" min="1" max="16" step="1" />
+            </div>
+            <details class="mini-details">
+              <summary>Gitee 更新源（可选）</summary>
+              <div class="field" style="margin-top:8px;">
+                <label>Gitee 只读 token（一般不用填）</label>
+                <input id="setGiteeToken" type="password" placeholder="留空即可：公开仓库匿名也能读" />
+              </div>
+            </details>
+          </div>
+        </section>
+
+        <!-- 5. 关于与支持 -->
+        <section class="settings-pane" id="paneAbout" hidden>
+          <div class="settings-card" id="aboutGroup">
+            <div class="settings-card-title">Hakkında & Destek</div>
+            <div class="about-box">
+              <div class="about-brand">
+                <img class="about-logo" src="assets/logo.png" alt="ApkStart Logo" draggable="false" />
+              </div>
+              <div class="about-info">
+                <div class="about-name">ApkStart <span class="about-ver" id="aboutVer"></span></div>
+                <p class="note">Windows için modern Android APK başlatıcısı: Çift tıkla yükle, masaüstü kısayolu, bağımsız pencere ve yüksek performans.</p>
+                <div class="about-links" style="display:flex;flex-direction:column;gap:8px;margin-top:12px;">
+                  <div class="user-support">
+                    <b>Fork & Destek:</b>
+                    <a href="https://github.com/Wiojelt/apkstart" target="_blank" rel="noopener">GitHub · Wiojelt/apkstart</a>
+                    <br>
+                    <a href="https://github.com/Wiojelt/apkstart/issues" target="_blank" rel="noopener">Sorun Bildir / Destek Talebi (Issues)</a>
+                  </div>
+                  <div class="upstream-support" style="margin-top: 6px; font-size: 11.5px; opacity: 0.85;">
+                    <span>Orijinal Proje: </span>
+                    <a href="https://github.com/RoutineMiku/apkstart" target="_blank" rel="noopener">RoutineMiku/apkstart</a>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        </section>
+      </main>
     </div>
-    <footer class="modal-foot">
-      <span class="inline-note">设置修改后立即生效</span>
-      <button class="btn primary" id="btnDoneSettings">完成</button>
-    </footer>
   </div>
+</div> <!-- .app-views -->
+
+<!-- 兼容性隐藏元素与旧选择器兜底 -->
+<div id="settingsMask" style="display:none"></div>
+<button id="btnCloseSettings" style="display:none"></button>
+<button id="btnDoneSettings" style="display:none"></button>
+<div style="display:none">
+  <img src="assets/douyin-qr.jpg" alt="" />
+  <a href="https://v.douyin.com/9TIIxVCANig/">Douyin</a>
 </div>
 
 <script src="i18n-dom.js"></script>

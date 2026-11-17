@@ -654,6 +654,9 @@ function applyTheme(theme) {
     actual = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   }
   document.documentElement.dataset.theme = actual;
+  if (window.api && typeof api.setTitleBarTheme === 'function') {
+    api.setTitleBarTheme(actual).catch(() => {});
+  }
   const iconEl = $('themeIcon');
   if (iconEl && THEME_ICONS[chosen]) {
     iconEl.innerHTML = THEME_ICONS[chosen];
@@ -962,11 +965,22 @@ async function refreshDataInfo() {
     + t('游戏提示「存储空间不足」就把这里调大后点「立即扩容」——扩容是就地做的，已装应用与存档都保留。');
 }
 
-async function openSettings() {
+function switchSettingsTab(tabName) {
+  const tabs = document.querySelectorAll('.settings-tab');
+  const panes = document.querySelectorAll('.settings-pane');
+  tabs.forEach((tab) => {
+    tab.classList.toggle('active', tab.dataset.tab === tabName);
+  });
+  panes.forEach((pane) => {
+    pane.hidden = (pane.id !== tabName);
+  });
+}
+
+async function openSettings(targetTab) {
   state.settings = await api.getSettings();
   fillSettings(state.settings);
   const info = await api.info();
-  $('setRuntimeDir').value = info.runtimeDir || info.dataDir;
+  if ($('setRuntimeDir')) $('setRuntimeDir').value = info.runtimeDir || info.dataDir;
   if ($('setAvdDir')) {
     const di = await api.dataInfo().catch(() => null);
     $('setAvdDir').value = (di && di.avdDir) || '';
@@ -977,25 +991,43 @@ async function openSettings() {
   if (curVerEl && info.version) curVerEl.textContent = `v${info.version}`;
   const assoc = await api.assocStatus();
   const btn = $('btnAssoc');
-  btn.textContent = assoc.registered ? t('已关联 · 点击取消') : t('未关联 · 点击开启');
-  btn.dataset.on = assoc.registered ? '1' : '0';
+  if (btn) {
+    btn.textContent = assoc.registered ? t('已关联 · 点击取消') : t('未关联 · 点击开启');
+    btn.dataset.on = assoc.registered ? '1' : '0';
+  }
 
   api.doctorProfile().then((r) => {
-    if (r && r.text) $('autoProfileText').textContent = r.text;
-  }).catch(() => { $('autoProfileText').textContent = t('自动模式'); });
+    if (r && r.text && $('autoProfileText')) $('autoProfileText').textContent = r.text;
+  }).catch(() => { if ($('autoProfileText')) $('autoProfileText').textContent = t('自动模式'); });
   api.runtimeUsage().then((u) => {
-    $('usageText').textContent = u
-      ? `${t('共 {total}', { total: u.totalText })} · ${u.reclaimable ? t('可回收 {size}（{n} 项）', { size: u.reclaimableText, n: u.count }) : t('已是精简状态')}`
-      : t('统计不可用');
-  }).catch(() => { $('usageText').textContent = t('统计不可用'); });
+    if ($('usageText')) {
+      $('usageText').textContent = u
+        ? `${t('共 {total}', { total: u.totalText })} · ${u.reclaimable ? t('可回收 {size}（{n} 项）', { size: u.reclaimableText, n: u.count }) : t('已是精简状态')}`
+        : t('统计不可用');
+    }
+  }).catch(() => { if ($('usageText')) $('usageText').textContent = t('统计不可用'); });
 
-  $('settingsMask').classList.add('on');
+  if ($('mainView')) $('mainView').hidden = true;
+  if ($('settingsView')) {
+    $('settingsView').hidden = false;
+    if (typeof window.translateDom === 'function') {
+      window.translateDom($('settingsView'));
+    }
+  }
+  if ($('settingsMask')) $('settingsMask').classList.remove('on');
+
+  if (targetTab) {
+    switchSettingsTab(targetTab);
+  }
+
   refreshAndroid();
   refreshDataInfo();
 }
 
 function closeSettings() {
-  $('settingsMask').classList.remove('on');
+  if ($('settingsView')) $('settingsView').hidden = true;
+  if ($('mainView')) $('mainView').hidden = false;
+  if ($('settingsMask')) $('settingsMask').classList.remove('on');
 }
 
 /* ---------------- 软件更新 ---------------- */
@@ -1735,13 +1767,24 @@ function bindEvents() {
     api.openExternal(a.getAttribute('href'));
   });
 
-  $('btnSettings').addEventListener('click', openSettings);
+  $('btnSettings').addEventListener('click', () => {
+    const sView = $('settingsView');
+    if (sView && !sView.hidden) closeSettings();
+    else openSettings();
+  });
+  if ($('btnBackFromSettings')) $('btnBackFromSettings').addEventListener('click', closeSettings);
+  if ($('btnHomeFromSettings')) $('btnHomeFromSettings').addEventListener('click', closeSettings);
+  document.querySelectorAll('.settings-tab').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      switchSettingsTab(btn.dataset.tab);
+    });
+  });
   initLangButton();
   // 状态标签也当入口：点「需要部署 / 引导中 / Android 14」直接进设置的运行时面板
   $('engineTag').addEventListener('click', () => showSetup(true));
-  $('btnCloseSettings').addEventListener('click', closeSettings);
-  $('btnDoneSettings').addEventListener('click', closeSettings);
-  $('settingsMask').addEventListener('click', (e) => {
+  if ($('btnCloseSettings')) $('btnCloseSettings').addEventListener('click', closeSettings);
+  if ($('btnDoneSettings')) $('btnDoneSettings').addEventListener('click', closeSettings);
+  if ($('settingsMask')) $('settingsMask').addEventListener('click', (e) => {
     if (e.target === $('settingsMask')) closeSettings();
   });
 
@@ -1862,6 +1905,9 @@ function bindEvents() {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       hideMenu();
+      closeSettings();
+    }
+    if (e.altKey && e.key === 'ArrowLeft') {
       closeSettings();
     }
     if (e.ctrlKey && e.key.toLowerCase() === 'f') {

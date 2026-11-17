@@ -666,17 +666,35 @@ function enableWindowsFeature(feature) {
 
 // ---------------- 主窗口 ----------------
 
+function getTitleBarOverlay(theme) {
+  if (theme === 'light') {
+    return { color: '#f8fafc', symbolColor: '#0f172a', height: 44 };
+  } else if (theme === 'nord') {
+    return { color: '#242933', symbolColor: '#eceff4', height: 44 };
+  } else {
+    // dark (default)
+    return { color: '#0d1117', symbolColor: '#f0f6fc', height: 44 };
+  }
+}
+
+function getWindowBgColor(theme) {
+  if (theme === 'light') return '#f8fafc';
+  if (theme === 'nord') return '#242933';
+  return '#0d1117';
+}
+
 function createWindow({ show = true } = {}) {
+  const curTheme = (store.getSettings() && store.getSettings().theme) || 'dark';
   mainWindow = new BrowserWindow({
     width: Number(process.env.APKSTART_WIN_W) || 1140,
     height: Number(process.env.APKSTART_WIN_H) || 740,
     minWidth: 900,
     minHeight: 560,
     show: false,
-    backgroundColor: '#f7f8fa',
+    backgroundColor: getWindowBgColor(curTheme),
     frame: false,
     titleBarStyle: 'hidden',
-    titleBarOverlay: { color: '#f7f8fa', symbolColor: '#2b3138', height: 44 },
+    titleBarOverlay: getTitleBarOverlay(curTheme),
     icon: nativeImage.createFromBuffer(ICON_PNG),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -1334,8 +1352,27 @@ function registerIpc() {
     }
     return { ok: true, language: code };
   });
+  ipcMain.handle('titlebar:setTheme', (_e, theme) => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      try {
+        if (typeof mainWindow.setTitleBarOverlay === 'function') {
+          mainWindow.setTitleBarOverlay(getTitleBarOverlay(theme));
+        }
+        mainWindow.setBackgroundColor(getWindowBgColor(theme));
+      } catch (_) { /* ignore */ }
+    }
+    return { ok: true };
+  });
   ipcMain.handle('settings:set', (_e, patch) => {
     const next = store.saveSettings(patch);
+    if (patch && patch.theme && mainWindow && !mainWindow.isDestroyed()) {
+      try {
+        if (typeof mainWindow.setTitleBarOverlay === 'function') {
+          mainWindow.setTitleBarOverlay(getTitleBarOverlay(patch.theme));
+        }
+        mainWindow.setBackgroundColor(getWindowBgColor(patch.theme));
+      } catch (_) { /* ignore */ }
+    }
     if (patch && patch.autoStart !== undefined) applyAutoStart();
     if (patch && patch.display && appWin && appWin.isOpen) {
       // 竖屏基准尺寸变了：只影响后续打开的窗口大小，不打断正在跑的应用

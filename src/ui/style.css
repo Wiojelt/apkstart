@@ -98,6 +98,159 @@ body {
 
 /* ---------------- 布局 ---------------- */
 
+.app-views {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.view {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.view[hidden] {
+  display: none !important;
+}
+
+/* ---------------- 设置页面视图 ---------------- */
+
+.settings-view {
+  background: var(--bg);
+}
+
+.settings-nav {
+  height: 44px;
+  flex: 0 0 44px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+}
+
+.settings-nav-title {
+  font-size: 13.5px;
+  font-weight: 650;
+  color: var(--text);
+  margin-left: 6px;
+  letter-spacing: .2px;
+}
+
+.settings-nav-spacer { flex: 1; }
+
+.settings-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--text);
+  font-size: 12px;
+  font-family: inherit;
+  font-weight: 550;
+  cursor: pointer;
+  transition: background .12s ease, border-color .12s ease;
+}
+.settings-nav-btn:hover {
+  background: var(--hover-bg);
+  border-color: var(--brand);
+}
+.settings-nav-btn svg {
+  flex-shrink: 0;
+}
+
+.settings-page-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  overflow: hidden;
+}
+
+.settings-sidebar {
+  width: 210px;
+  flex: 0 0 210px;
+  border-right: 1px solid var(--line);
+  background: var(--bg);
+  padding: 12px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+}
+
+.settings-tab {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--muted);
+  font-size: 12.5px;
+  font-family: inherit;
+  font-weight: 550;
+  cursor: pointer;
+  text-align: left;
+  transition: background .12s ease, color .12s ease;
+  user-select: none;
+}
+.settings-tab:hover {
+  background: var(--hover-bg);
+  color: var(--text);
+}
+.settings-tab.active {
+  background: var(--brand-soft);
+  color: var(--brand);
+  border-color: rgba(56, 189, 248, 0.2);
+  font-weight: 600;
+}
+.settings-tab svg { flex: 0 0 auto; }
+
+.settings-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px 28px 40px;
+  background: var(--panel-2);
+}
+
+.settings-pane {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.settings-pane[hidden] {
+  display: none !important;
+}
+
+.settings-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: 16px 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.settings-card-title {
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--brand);
+  margin-bottom: 12px;
+  letter-spacing: .2px;
+}
+
 .shell {
   flex: 1;
   min-height: 0;
