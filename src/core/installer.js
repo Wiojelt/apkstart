@@ -329,7 +329,7 @@ class Installer {
       description: t('{name} — 由 ApkStart 运行', { name: app.label }),
       cwd: this.ctx.cwd,
       // 每个应用一个 AUMID：任务栏上按应用分组，不会全挤到 ApkStart 里
-      appUserModelId: `RoutineMiku.ApkStart.${app.package}`.slice(0, 128),
+      appUserModelId: `Wiojelt.ApkStart.${app.package}`.slice(0, 128),
     });
 
     let first = null;

@@ -1759,6 +1759,10 @@ function bindSettings() {
 /* ---------------- 事件绑定 ---------------- */
 
 function bindEvents() {
+  if ($('btnWinMin')) $('btnWinMin').addEventListener('click', () => api.winMinimize());
+  if ($('btnWinMax')) $('btnWinMax').addEventListener('click', () => api.winMaximize());
+  if ($('btnWinClose')) $('btnWinClose').addEventListener('click', () => api.winClose());
+
   // 链接统一走系统浏览器
   document.addEventListener('click', (e) => {
     const a = e.target.closest && e.target.closest('a[href^="http"]');

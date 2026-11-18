@@ -22,7 +22,7 @@ const { ZipFile } = require('./zip');
 const { cmpVer } = require('./version');
 const { Sources } = require('./sources');
 
-const OWNER = 'RoutineMiku';
+const OWNER = 'Wiojelt';
 const REPO = 'apkstart';
 
 /** PowerShell 单引号字符串：内部的 ' 要写成 '' */

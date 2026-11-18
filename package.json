@@ -4,7 +4,7 @@
   "version": "0.5.1",
   "description": "Windows Android Runner (TR/EN Fork) - Dual-language Turkish & English",
   "main": "src/main.js",
-  "author": "RoutineMiku",
+  "author": "Wiojelt",
   "license": "MIT",
   "private": true,
   "homepage": "https://github.com/RoutineMiku/apkstart#readme",

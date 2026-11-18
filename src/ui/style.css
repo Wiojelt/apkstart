@@ -47,11 +47,46 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 0 12px 0 14px;
+  padding: 0 0 0 14px;
   background: var(--bg);
   border-bottom: 1px solid transparent;
   -webkit-app-region: drag;
-  padding-right: 148px; /* 给系统窗口按钮留位 */
+  user-select: none;
+}
+
+.window-controls {
+  display: flex;
+  align-items: stretch;
+  height: 44px;
+  margin-left: 6px;
+  -webkit-app-region: no-drag;
+}
+
+.win-btn {
+  width: 46px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  padding: 0;
+}
+
+.win-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="light"] .win-btn:hover {
+  background: rgba(0, 0, 0, 0.07);
+}
+
+.win-btn.win-close:hover {
+  background: #e81123 !important;
+  color: #ffffff !important;
 }
 
 .brand { display: flex; align-items: center; gap: 8px; }

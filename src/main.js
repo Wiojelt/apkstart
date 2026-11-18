@@ -698,14 +698,10 @@ function applyThemeToWindows(theme) {
   if (nativeTheme) {
     nativeTheme.themeSource = (eff === 'light') ? 'light' : 'dark';
   }
-  const overlay = getTitleBarOverlay(eff);
   const bg = getWindowBgColor(eff);
   for (const win of BrowserWindow.getAllWindows()) {
     try {
       if (!win.isDestroyed()) {
-        if (typeof win.setTitleBarOverlay === 'function') {
-          win.setTitleBarOverlay(overlay);
-        }
         win.setBackgroundColor(bg);
       }
     } catch (_) { /* ignore */ }
@@ -727,7 +723,7 @@ function createWindow({ show = true } = {}) {
     backgroundColor: getWindowBgColor(eff),
     frame: false,
     titleBarStyle: 'hidden',
-    titleBarOverlay: getTitleBarOverlay(eff),
+    titleBarOverlay: false,
     icon: nativeImage.createFromBuffer(ICON_PNG),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),

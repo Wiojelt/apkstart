@@ -243,7 +243,7 @@
   "中文输入法（推荐）": "Çince giriş yöntemi (önerilir)",
   "为「{label}」选择按键映射预设：{list}输入编号：": "“{label}” için bir anahtar eşleme ön ayarı seçin:{list}Bir sayı girin:",
   "仍然没有网络，正在重置安卓数据并重新开机（应用清单会保留，点开时自动重装）…": "Hala ağ yok; Android verileri sıfırlanıyor ve yeniden başlatılıyor (uygulama listeniz tutulur, uygulamalar açıldığında otomatik olarak yeniden yüklenir)…",
-  "从 GitHub（RoutineMiku/apkstart）获取最新版本；轻量版会下载便携包并自动替换程序文件， 运行时、已装应用与快照都不受影响。": "GitHub'dan en son sürümü alır (RoutineMiku/apkstart); lite sürümü taşınabilir paketi indirir ve program dosyalarını otomatik olarak değiştirir. Çalışma zamanı, yüklü uygulamalar ve anlık görüntüler etkilenmez.",
+  "从 GitHub（RoutineMiku/apkstart）获取最新版本；轻量版会下载便携包并自动替换程序文件， 运行时、已装应用与快照都不受影响。": "GitHub üzerinden en son sürümü indirir; taşınabilir paket program dosyalarını sorunsuz günceller. Çalışma zamanı, yüklü uygulamalar ve veriler korunur.",
   "以上映射只在应用窗口前台生效；切回桌面或关闭窗口后，鼠标行为完全恢复 Windows 原生。": "Bu eşlemeler yalnızca bir uygulama penceresi ön plandayken geçerlidir; masaüstüne geri döndüğünüzde veya pencereyi kapattığınızda fare tam olarak normal Windows gibi davranır.",
   "优化失败，运行时可能未启动": "Optimizasyon başarısız oldu; çalışma zamanı çalışmıyor olabilir",
   "会先停止运行时，再删除旧镜像、当前 AVD 的快速启动快照、锁文件和非活动 AVD 的缓存。已安装的应用本身保留（只清快照），此操作不可撤销，建议先导出诊断报告。": "Önce çalışma zamanı durdurulacak, ardından eski görüntüler, mevcut AVD'nin hızlı önyükleme anlık görüntüleri, kilit dosyaları ve etkin olmayan AVD'lerin önbellekleri silinecek. Yüklü uygulamalar korunur (yalnızca anlık görüntüler temizlenir). Bu geri alınamaz; Öncelikle bir teşhis raporunu dışa aktarmayı düşünün.",
