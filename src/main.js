@@ -722,8 +722,6 @@ function createWindow({ show = true } = {}) {
     show: false,
     backgroundColor: getWindowBgColor(eff),
     frame: false,
-    titleBarStyle: 'hidden',
-    titleBarOverlay: false,
     icon: nativeImage.createFromBuffer(ICON_PNG),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
